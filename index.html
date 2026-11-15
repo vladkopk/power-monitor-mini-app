@@ -21,6 +21,18 @@ header{display:flex;justify-content:space-between;align-items:center;margin:4px 
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat b{font-size:18px;display:block;margin-top:7px}.episode{padding:13px 0;border-bottom:1px solid var(--line)}.episode:last-child{border:0}.episode b{font-size:13px}.episode small{display:block;color:var(--muted);font-size:10px;margin-top:5px}.episode strong{float:right;color:var(--red)}
 .setting{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:15px;margin-bottom:10px}.setting p{font-size:11px;color:var(--muted);margin:5px 0 0}.switch{width:47px;height:27px;border-radius:99px;background:#435160;padding:3px;flex:none}.switch i{display:block;width:21px;height:21px;border-radius:50%;background:white;transition:transform .18s}.switch.on{background:#168b61}.switch.on i{transform:translateX(20px)}
 .notice{background:#35232a;border:1px solid #67404a;color:#f0bdc5;padding:13px;border-radius:14px;font-size:11px;line-height:1.5;margin-top:13px}.notice.ok{background:#173329;border-color:#285a46;color:#a9e4c8}.muted{color:var(--muted)}.hidden{display:none!important}
+.back-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 15px}
+.back-button{display:inline-flex;align-items:center;gap:9px;background:#202e3b;border:1px solid #34485a;color:#eaf3fb;border-radius:13px;padding:10px 14px;font-size:13px;font-weight:700}
+.back-button .arrow{font-size:19px;line-height:1;color:var(--blue)}
+.back-caption{font-size:11px;color:var(--muted);text-align:right}
+.chart-inspector{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#13202c;border:1px solid #304558;border-radius:13px;padding:11px 12px;margin:13px 0 7px}
+.chart-inspector-label{display:block;font-size:10px;color:var(--muted);margin-bottom:5px}
+.chart-inspector-value{display:block;font-size:21px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums}
+.chart-inspector-time{font-size:11px;color:#b8c8d7;text-align:right;line-height:1.45}
+.chart-hint{font-size:10px;color:var(--muted);margin:5px 0 7px}
+.chartbox svg{touch-action:pan-y;cursor:crosshair;outline:none}
+.chartbox svg:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:8px}
+
 nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(4,1fr);background:#111b26ee;border-top:1px solid var(--line);backdrop-filter:blur(18px);padding:8px 10px calc(8px + env(safe-area-inset-bottom));max-width:620px;margin:auto}.navbtn{background:none;color:var(--muted);font-size:10px;padding:5px 2px}.navbtn .ico{display:block;font-size:20px;margin-bottom:3px}.navbtn.active{color:var(--blue)}
 #bridge{position:fixed;width:1px;height:1px;left:-10px;bottom:-10px;opacity:0;pointer-events:none;border:0}
 @media(max-width:360px){.metric{padding:10px 8px}.metric b{font-size:17px}.app{padding-left:12px;padding-right:12px}}
@@ -37,6 +49,10 @@ nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:re
 <iframe id="bridge" name="powerMonitorBridgeFrame" title="Secure Apps Script connection" aria-hidden="true"></iframe>
 <main class="app">
 <header><div class="brand"><div class="logo">ϟ</div><div><h1>Power Monitor</h1><div class="eyebrow">ENERGY CONTROL CENTER</div></div></div><button class="iconbtn" id="refresh" aria-label="Оновити">↻</button></header>
+<div id="backRow" class="back-row hidden">
+ <button type="button" id="backHome" class="back-button"><span class="arrow">←</span><span>Назад до огляду</span></button>
+ <span id="backCaption" class="back-caption"></span>
+</div>
 <section id="home" class="view active">
 <div class="hero"><div class="label">ПОТОЧНИЙ СТАН</div><div class="state" id="state">Завантаження…</div><div class="sub" id="stateSub">Підключення до моніторингу</div><span class="pill" id="fresh">Очікуємо дані</span></div>
 <div class="metrics"><div class="metric"><span>Напруга</span><b id="voltage">—<i class="unit">В</i></b></div><div class="metric"><span>Струм</span><b id="current">—<i class="unit">А</i></b></div><div class="metric"><span>Потужність</span><b id="power">—<i class="unit">кВт</i></b></div></div>
@@ -52,7 +68,7 @@ nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:re
 <section id="charts" class="view"><h2 class="title">Графіки вимірювань</h2><p class="desc">Історія напруги, струму та навантаження TOMZN</p>
 <div class="chips" id="metrics"><button class="chip active" data-metric="voltage">Напруга</button><button class="chip" data-metric="current">Струм</button><button class="chip" data-metric="power">Потужність</button></div>
 <div class="chips" id="chartRanges"><button class="chip" data-range="1h">1 год</button><button class="chip" data-range="6h">6 год</button><button class="chip" data-range="12h">12 год</button><button class="chip active" data-range="24h">24 год</button><button class="chip" data-range="3d">3 дні</button><button class="chip" data-range="7d">7 днів</button><button class="chip" data-range="30d">30 днів</button></div>
-<div class="chartbox"><div class="sectionhead" style="margin:0"><h2 id="chartName">Напруга · 24 год</h2><span id="chartCount">— точок</span></div><div id="chart"><div class="muted" style="padding:55px 0;text-align:center">Завантаження графіка…</div></div><div class="chartstats"><div><span>Середнє</span><b id="avg">—</b></div><div><span>Мінімум</span><b id="min">—</b></div><div><span>Максимум</span><b id="max">—</b></div></div></div>
+<div class="chartbox"><div class="sectionhead" style="margin:0"><h2 id="chartName">Напруга · 24 год</h2><span id="chartCount">— точок</span></div><div class="chart-inspector"><div><span class="chart-inspector-label">Вибране вимірювання</span><strong class="chart-inspector-value" id="pointValue">—</strong></div><div class="chart-inspector-time" id="pointTime">Торкніться графіка</div></div><div class="chart-hint">Проведіть пальцем по графіку або натисніть на точку, щоб побачити точне значення</div><div id="chart"><div class="muted" style="padding:55px 0;text-align:center">Завантаження графіка…</div></div><div class="chartstats"><div><span>Середнє</span><b id="avg">—</b></div><div><span>Мінімум</span><b id="min">—</b></div><div><span>Максимум</span><b id="max">—</b></div></div></div>
 </section>
 <section id="outages" class="view"><h2 class="title">Історія відключень</h2><p class="desc">Переходи ON → OFF → ON</p><div class="chips" id="outageRanges"><button class="chip" data-range="24h">24 год</button><button class="chip active" data-range="7d">7 днів</button><button class="chip" data-range="30d">30 днів</button></div><div class="grid2"><div class="stat"><span>Сумарно без світла</span><b id="offTotal">—</b></div><div class="stat"><span>Частка періоду</span><b id="offShare">—</b></div><div class="stat"><span>Кількість епізодів</span><b id="offCount">—</b></div><div class="stat"><span>Середня тривалість</span><b id="offAvg">—</b></div></div><div class="sectionhead"><h2>Останні епізоди</h2></div><div class="card" id="episodes">Завантаження…</div></section>
 <section id="quality" class="view"><h2 class="title">Якість напруги</h2><p class="desc">Аналіз фактичних вимірювань</p><div class="chips" id="qualityRanges"><button class="chip active" data-range="24h">24 год</button><button class="chip" data-range="7d">7 днів</button><button class="chip" data-range="30d">30 днів</button></div><div class="grid2"><div class="stat"><span>Середня напруга</span><b id="qAvg">—</b></div><div class="stat"><span>Мінімум / максимум</span><b id="qMinMax">—</b></div><div class="stat"><span>Нормальна зона</span><b id="qNormal">—</b></div><div class="stat"><span>Низька напруга</span><b id="qLow">—</b></div><div class="stat"><span>Частка низької напруги</span><b id="qPct">—</b></div><div class="stat"><span>Покриття вимірами</span><b id="qCoverage">—</b></div><div class="stat"><span>Оцінене споживання</span><b id="qEnergy">—</b></div><div class="stat"><span>Валідні виміри</span><b id="qSamples">—</b></div></div></section>
@@ -127,9 +143,92 @@ async function rpc(action,payload){
  state.rpcQueue=task.catch(()=>{});
  return task;
 }
-function goto(view){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===view));document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===view));state.activeView=view;loadView(view).catch(e=>showError(e.message));}
+function goto(view){
+ document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===view));
+ document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===view));
+ state.activeView=view;
+ const back=view!=='home';
+ $('backRow').classList.toggle('hidden',!back);
+ const labels={charts:'Графіки',outages:'Відключення',quality:'Якість напруги',settings:'Налаштування'};
+ $('backCaption').textContent=labels[view]||'';
+ if(tg&&tg.BackButton){if(back)tg.BackButton.show();else tg.BackButton.hide();}
+ loadView(view).catch(e=>showError(e.message));
+}
+$('backHome').addEventListener('click',()=>goto('home'));
+if(tg&&tg.BackButton){tg.BackButton.onClick(()=>goto('home'));}
 async function loadHome(){let d=await rpc('dashboard');state.dashboard=d;$('state').textContent=d.state==='on'?'● Світло є':d.state==='off'?'● Світла немає':'● Стан невідомий';$('state').style.color=d.state==='on'?'var(--green)':d.state==='off'?'var(--red)':'var(--amber)';$('stateSub').textContent=d.reason||'Стан за останньою перевіркою';$('fresh').textContent=d.snapshotFresh?'Дані актуальні':'Очікується оновлення даних';$('voltage').innerHTML=fmt(d.voltage,1)+'<i class="unit">В</i>';$('current').innerHTML=fmt(d.currentA,2)+'<i class="unit">А</i>';$('power').innerHTML=fmt(d.powerW===null?null:Number(d.powerW)/1000,2)+'<i class="unit">кВт</i>';$('homeOff').textContent=duration(d.outage24h&&d.outage24h.offMs);$('homeCount').textContent=d.outage24h?d.outage24h.outageCount:'—';$('notify').classList.toggle('on',!!d.notificationsEnabled);$('diag').textContent='Tuya: '+(d.tuyaCommState||'—')+' · Дані: '+(d.tuyaDataState||'—')+' · Останній успішний запит: '+(d.lastTuyaSuccessAt?date(d.lastTuyaSuccessAt):'—');}
-function drawChart(data){let pts=data.points||[];if(!pts.length){$('chart').innerHTML='<div class="muted" style="padding:55px 0;text-align:center">Немає вимірювань за цей період</div>';return;}let vals=pts.map(x=>Number(x.value)),min=Math.min(0,...vals),max=Math.max(1,...vals);if(max===min)max=min+1;let w=320,h=170,poly=pts.map((p,i)=>{let x=8+i*(w-16)/Math.max(1,pts.length-1),y=h-12-(Number(p.value)-min)/(max-min)*(h-24);return x.toFixed(1)+','+y.toFixed(1)}).join(' ');$('chart').innerHTML='<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none"><line x1="8" y1="'+(h-12)+'" x2="'+(w-8)+'" y2="'+(h-12)+'" stroke="#344657"/><polyline fill="none" stroke="#70b7ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="'+poly+'"/></svg>';}
+function pointTimeValue(p){
+ const raw=p.at??p.timestamp??p.time??p.date??p.ts??null;
+ if(raw===null||raw===undefined||raw==='')return null;
+ const n=Number(raw);
+ if(Number.isFinite(n)&&String(raw).trim()!==''){return n>0&&n<1e12?n*1000:n;}
+ const parsed=Date.parse(raw);
+ return Number.isFinite(parsed)?parsed:null;
+}
+function drawChart(data){
+ const pts=data.points||[];
+ state.chartPoints=pts;
+ if(!pts.length){
+  $('chart').innerHTML='<div class="muted" style="padding:55px 0;text-align:center">Немає вимірювань за цей період</div>';
+  $('pointValue').textContent='—';
+  $('pointTime').textContent='Немає даних';
+  return;
+ }
+ const vals=pts.map(x=>Number(x.value)).filter(Number.isFinite);
+ if(!vals.length){$('chart').innerHTML='<div class="muted" style="padding:55px 0;text-align:center">Дані графіка мають невідомий формат</div>';return;}
+ let min=Math.min(0,...vals),max=Math.max(1,...vals);
+ if(max===min)max=min+1;
+ const w=320,h=190,left=10,right=310,top=12,bottom=174;
+ const coords=pts.map((p,i)=>{
+  const x=left+i*(right-left)/Math.max(1,pts.length-1);
+  const value=Number(p.value);
+  const y=bottom-(value-min)/(max-min)*(bottom-top);
+  return {x,y,value,p};
+ });
+ state.chartCoords=coords;
+ const poly=coords.map(c=>c.x.toFixed(1)+','+c.y.toFixed(1)).join(' ');
+ const svg='<svg id="chartSvg" tabindex="0" role="img" aria-label="Інтерактивний графік вимірювань" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none">'
+  +'<line x1="'+left+'" y1="'+bottom+'" x2="'+right+'" y2="'+bottom+'" stroke="#344657" stroke-width="1"/>'
+  +'<line x1="'+left+'" y1="'+(top+(bottom-top)*.33)+'" x2="'+right+'" y2="'+(top+(bottom-top)*.33)+'" stroke="#263746" stroke-width="1" stroke-dasharray="3 4"/>'
+  +'<line x1="'+left+'" y1="'+(top+(bottom-top)*.66)+'" x2="'+right+'" y2="'+(top+(bottom-top)*.66)+'" stroke="#263746" stroke-width="1" stroke-dasharray="3 4"/>'
+  +'<polyline fill="none" stroke="#70b7ff" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" points="'+poly+'"/>'
+  +'<line id="chartCursor" x1="'+left+'" y1="'+top+'" x2="'+left+'" y2="'+bottom+'" stroke="#c6e4ff" stroke-width="1.2" stroke-dasharray="4 4" opacity=".9"/>'
+  +'<circle id="chartPointHalo" cx="'+left+'" cy="'+top+'" r="8" fill="#70b7ff" opacity=".22"/>'
+  +'<circle id="chartPoint" cx="'+left+'" cy="'+top+'" r="4.2" fill="#ffffff" stroke="#70b7ff" stroke-width="2.5"/>'
+  +'</svg>';
+ $('chart').innerHTML=svg;
+ const svgEl=$('chartSvg');
+ function selectPoint(index){
+  index=Math.max(0,Math.min(coords.length-1,index));
+  const c=coords[index],prec=state.metric==='voltage'?1:2;
+  $('chartCursor').setAttribute('x1',c.x);$('chartCursor').setAttribute('x2',c.x);
+  $('chartPoint').setAttribute('cx',c.x);$('chartPoint').setAttribute('cy',c.y);
+  $('chartPointHalo').setAttribute('cx',c.x);$('chartPointHalo').setAttribute('cy',c.y);
+  $('pointValue').textContent=fmt(c.value,prec)+' '+units[state.metric];
+  const stamp=pointTimeValue(c.p);
+  $('pointTime').textContent=stamp===null?('Точка '+(index+1)+' із '+pts.length):date(stamp);
+  state.selectedChartPoint=index;
+ }
+ function nearestPoint(event){
+  const rect=svgEl.getBoundingClientRect();
+  if(!rect.width)return;
+  const x=(event.clientX-rect.left)/rect.width*w;
+  let best=0,dist=Infinity;
+  coords.forEach((c,i)=>{const d=Math.abs(c.x-x);if(d<dist){dist=d;best=i;}});
+  selectPoint(best);
+ }
+ svgEl.addEventListener('pointerdown',e=>{nearestPoint(e);try{svgEl.setPointerCapture(e.pointerId);}catch(err){}});
+ svgEl.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'||e.buttons>0)nearestPoint(e);});
+ svgEl.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+   e.preventDefault();
+   selectPoint((state.selectedChartPoint||0)+(e.key==='ArrowRight'?1:-1));
+  }
+  if(e.key==='Home'){e.preventDefault();selectPoint(0);}
+  if(e.key==='End'){e.preventDefault();selectPoint(coords.length-1);}
+ });
+ selectPoint(coords.length-1);
+}
 async function loadCharts(){let d=await rpc('chart',{metric:state.metric,range:state.chartRange});$('chartName').textContent=names[state.metric]+' · '+state.chartRange;$('chartCount').textContent=d.count+' точок';drawChart(d);$('avg').textContent=fmt(d.average)+' '+units[state.metric];$('min').textContent=fmt(d.min)+' '+units[state.metric];$('max').textContent=fmt(d.max)+' '+units[state.metric];}
 async function loadOutages(){let d=await rpc('outages',{range:state.outageRange});$('offTotal').textContent=duration(d.offMs);$('offShare').textContent=fmt(d.sharePct)+'%';$('offCount').textContent=d.outageCount;$('offAvg').textContent=duration(d.averageDurationMs);let list=d.episodes||[];$('episodes').innerHTML=list.length?list.map(x=>'<div class="episode"><b>'+date(x.start)+(x.ongoing?' — триває':' — '+date(x.end))+'</b><strong>'+duration(x.durationMs)+'</strong><small>'+(x.startedBeforePeriod?'Почалося до початку періоду':'Відключення')+'</small></div>').join(''):'<div class="muted">Відключень за період не зафіксовано.</div>';}
 async function loadQuality(){let d=await rpc('quality',{range:state.qualityRange});$('qAvg').textContent=fmt(d.averageVoltage)+' В';$('qMinMax').textContent=fmt(d.minVoltage)+' / '+fmt(d.maxVoltage)+' В';$('qNormal').textContent=duration(d.normalVoltageMs);$('qLow').textContent=duration(d.lowVoltageMs);$('qPct').textContent=fmt(d.lowVoltagePct)+'%';$('qCoverage').textContent=fmt(d.coveragePct)+'%';$('qEnergy').textContent=fmt(d.estimatedEnergyKwh,2)+' кВт·год';$('qSamples').textContent=d.validVoltageSamples;}
