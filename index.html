@@ -77,7 +77,14 @@ function rpcOnce(action,payload){
  if(!tg||!tg.initData) return Promise.reject(new Error('Telegram не передав initData. Відкрий Mini App із кнопки меню бота.'));
  if(!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(gasUrl)) return Promise.reject(new Error('У config.js не вказано Apps Script URL із закінченням /exec.'));
  return new Promise((resolve,reject)=>{
-  let id=Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,18);
+  let id;
+  try {
+   const randomBytes=new Uint8Array(24);
+   crypto.getRandomValues(randomBytes);
+   id=Array.from(randomBytes).map(b=>b.toString(16).padStart(2,'0')).join('');
+  } catch (randomError) {
+   id=Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,18)+'_'+Math.random().toString(36).slice(2,18);
+  }
   let timer=setTimeout(()=>{delete state.pending[id];reject(new Error('Apps Script не повернув відповідь за 30 секунд. Перевір останню версію TG Hook і наявність обробника pmBridge у doPost().'));},30000);
   state.pending[id]={resolve,reject,timer};
   $('bridgeForm').action=gasUrl+'?pmBridge=1';
@@ -89,11 +96,27 @@ function rpcOnce(action,payload){
  });
 }
 window.addEventListener('message',e=>{
- // Apps Script HTML Service may expose an opaque sandbox origin. Trust only
- // this exact iframe browsing context, then correlate the one-time requestId.
- if(e.source!==frame.contentWindow)return;
  const m=e.data||{};
  if(m.type!=='power-monitor-rpc-result'||!m.requestId)return;
+
+ // Apps Script HTML Service can add nested sandbox frames. A reply may
+ // originate from the direct iframe, an inner googleusercontent iframe,
+ // or carry an opaque "null" origin. Accept only those bridge contexts,
+ // then require the unpredictable one-time requestId before resolving.
+ let trustedSource=e.source===frame.contentWindow;
+ let trustedOrigin=e.origin==='null';
+ if(!trustedOrigin&&!trustedSource){
+  try{
+   const u=new URL(e.origin);
+   trustedOrigin=u.protocol==='https:'&&(
+    u.hostname==='script.google.com'||
+    u.hostname==='script.googleusercontent.com'||
+    u.hostname.endsWith('.googleusercontent.com')
+   );
+  }catch(originError){}
+ }
+ if(!trustedSource&&!trustedOrigin)return;
+
  const p=state.pending[String(m.requestId)];if(!p)return;
  clearTimeout(p.timer);delete state.pending[String(m.requestId)];
  m.ok?p.resolve(m.result):p.reject(new Error(m.error||'Помилка серверного запиту.'));
