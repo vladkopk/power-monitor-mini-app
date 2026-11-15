@@ -80,7 +80,7 @@ function rpcOnce(action,payload){
   let id=Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,18);
   let timer=setTimeout(()=>{delete state.pending[id];reject(new Error('Apps Script не повернув відповідь за 30 секунд. Перевір останню версію TG Hook і наявність обробника pmBridge у doPost().'));},30000);
   state.pending[id]={resolve,reject,timer};
-  $('bridgeForm').action=gasUrl;
+  $('bridgeForm').action=gasUrl+'?pmBridge=1';
   $('bridgeRequestId').value=id;
   $('bridgeInitData').value=tg.initData;
   $('bridgeAction').value=action;
@@ -89,10 +89,9 @@ function rpcOnce(action,payload){
  });
 }
 window.addEventListener('message',e=>{
- const host=String(e.origin||'').replace(/^https:\/\//,'').split('/')[0].split(':')[0];
- // Apps Script may serve HtmlService from script.googleusercontent.com or a
- // generated *.googleusercontent.com host after its internal redirect.
- if(host!=='script.google.com'&&host!=='script.googleusercontent.com'&&!host.endsWith('.googleusercontent.com'))return;
+ // Apps Script HTML Service may expose an opaque sandbox origin. Trust only
+ // this exact iframe browsing context, then correlate the one-time requestId.
+ if(e.source!==frame.contentWindow)return;
  const m=e.data||{};
  if(m.type!=='power-monitor-rpc-result'||!m.requestId)return;
  const p=state.pending[String(m.requestId)];if(!p)return;
