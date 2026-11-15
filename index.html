@@ -54,6 +54,11 @@ nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:re
  <button type="button" id="backHome" class="back-button"><span class="arrow">←</span><span>Назад до огляду</span></button>
  <span id="backCaption" class="back-caption"></span>
 </div>
+<section id="restrictedAccess" class="view hidden">
+<div class="hero"><div class="label">ПРИВАТНІСТЬ POWER MONITOR</div><div class="state">Доступ до показників обмежено</div><div class="sub">Ти можеш керувати власною підпискою на сповіщення. Поточні показники, графіки та історія доступні лише користувачам, яким власник надав персональний дозвіл.</div></div>
+<div class="setting"><div><b>Telegram-сповіщення</b><p>Зникнення та відновлення електроенергії</p></div><button class="switch" id="restrictedNotify" type="button" aria-label="Увімкнути або вимкнути сповіщення"><i></i></button></div>
+<div class="card"><b>Як отримати доступ до показників?</b><p class="sub">Звернись до власника бота та надішли свій Telegram ID. Надання дозволу не змінює підписку на сповіщення.</p></div>
+</section>
 <section id="home" class="view active">
 <div class="hero"><div class="label">ПОТОЧНИЙ СТАН</div><div class="state" id="state">Завантаження…</div><div class="sub" id="stateSub">Підключення до моніторингу</div><span class="pill" id="fresh">Очікуємо дані</span></div>
 <div class="metrics"><div class="metric"><span>Напруга</span><b id="voltage">—<i class="unit">В</i></b></div><div class="metric"><span>Струм</span><b id="current">—<i class="unit">А</i></b></div><div class="metric"><span>Потужність</span><b id="power">—<i class="unit">кВт</i></b></div></div>
@@ -76,7 +81,7 @@ nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:re
 <section id="settings" class="view"><h2 class="title">Налаштування</h2><p class="desc">Керування сповіщеннями та діагностика</p><div class="setting"><div><b>Telegram-сповіщення</b><p>Зникнення та відновлення електроенергії</p></div><button class="switch" id="notify"><i></i></button></div><div class="card"><div class="sectionhead" style="margin:0 0 12px"><h2>Діагностика</h2><span>TOMZN / Tuya</span></div><p class="sub" id="diag">Очікуємо дані…</p></div><div class="card hidden" id="adminPanel" style="margin-top:10px"><div class="sectionhead" style="margin:0 0 10px"><h2>Адміністрування</h2><span>Приватний доступ</span></div><p class="sub">Керування користувачами, які отримують Telegram-сповіщення про стан електроенергії.</p><div class="admin-add"><input id="adminChatId" type="text" inputmode="numeric" autocomplete="off" placeholder="Telegram ID користувача" maxlength="20"><button id="adminAddBtn" type="button">Додати</button></div><p class="admin-note">Користувач має спершу відкрити бота й натиснути /start. Бот не може першим написати новому користувачу.</p><div class="admin-count" id="adminCount">0 підписників</div><div class="admin-list" id="adminList"></div></div></section>
 <div id="notice" class="notice hidden"></div>
 </main>
-<nav><button class="navbtn active" data-view="home"><span class="ico">⌂</span>Огляд</button><button class="navbtn" data-view="charts"><span class="ico">▥</span>Графіки</button><button class="navbtn" data-view="outages"><span class="ico">ϟ</span>Відключення</button><button class="navbtn" data-view="settings"><span class="ico">⚙</span>Налаштування</button></nav>
+<nav id="appNav"><button class="navbtn active" data-view="home"><span class="ico">⌂</span>Огляд</button><button class="navbtn" data-view="charts"><span class="ico">▥</span>Графіки</button><button class="navbtn" data-view="outages"><span class="ico">ϟ</span>Відключення</button><button class="navbtn" data-view="settings"><span class="ico">⚙</span>Налаштування</button></nav>
 <script>
 (function(){
 'use strict';
@@ -233,6 +238,29 @@ function drawChart(data){
 async function loadCharts(){let d=await rpc('chart',{metric:state.metric,range:state.chartRange});$('chartName').textContent=names[state.metric]+' · '+state.chartRange;$('chartCount').textContent=d.count+' точок';drawChart(d);$('avg').textContent=fmt(d.average)+' '+units[state.metric];$('min').textContent=fmt(d.min)+' '+units[state.metric];$('max').textContent=fmt(d.max)+' '+units[state.metric];}
 async function loadOutages(){let d=await rpc('outages',{range:state.outageRange});$('offTotal').textContent=duration(d.offMs);$('offShare').textContent=fmt(d.sharePct)+'%';$('offCount').textContent=d.outageCount;$('offAvg').textContent=duration(d.averageDurationMs);let list=d.episodes||[];$('episodes').innerHTML=list.length?list.map(x=>'<div class="episode"><b>'+date(x.start)+(x.ongoing?' — триває':' — '+date(x.end))+'</b><strong>'+duration(x.durationMs)+'</strong><small>'+(x.startedBeforePeriod?'Почалося до початку періоду':'Відключення')+'</small></div>').join(''):'<div class="muted">Відключень за період не зафіксовано.</div>';}
 async function loadQuality(){let d=await rpc('quality',{range:state.qualityRange});$('qAvg').textContent=fmt(d.averageVoltage)+' В';$('qMinMax').textContent=fmt(d.minVoltage)+' / '+fmt(d.maxVoltage)+' В';$('qNormal').textContent=duration(d.normalVoltageMs);$('qLow').textContent=duration(d.lowVoltageMs);$('qPct').textContent=fmt(d.lowVoltagePct)+'%';$('qCoverage').textContent=fmt(d.coveragePct)+'%';$('qEnergy').textContent=fmt(d.estimatedEnergyKwh,2)+' кВт·год';$('qSamples').textContent=d.validVoltageSamples;}
+async function startApp(){
+ const access=await rpc('access_info');
+ if(!access.allowed){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  $('restrictedAccess').classList.remove('hidden');
+  $('restrictedAccess').classList.add('active');
+  $('appNav').classList.add('hidden');
+  $('refresh').classList.add('hidden');
+  $('restrictedNotify').classList.toggle('on',!!access.subscribed);
+  return;
+ }
+ $('appNav').classList.remove('hidden');
+ $('refresh').classList.remove('hidden');
+ await loadView('home');
+}
+$('restrictedNotify').addEventListener('click',async()=>{
+ try{
+  const enabled=!$('restrictedNotify').classList.contains('on');
+  const result=await rpc('notifications',{enabled});
+  $('restrictedNotify').classList.toggle('on',!!result.enabled);
+  showOk(result.enabled?'Сповіщення увімкнено.':'Сповіщення вимкнено.');
+ }catch(e){showError(e.message);}
+});
 async function loadView(view){if(view==='home'||view==='settings')await loadHome();if(view==='settings')await loadAdminSubscribers();if(view==='charts')await loadCharts();if(view==='outages')await loadOutages();if(view==='quality')await loadQuality();}
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>goto(b.dataset.view)));
 document.querySelectorAll('#metrics [data-metric]').forEach(b=>b.addEventListener('click',()=>{state.metric=b.dataset.metric;document.querySelectorAll('#metrics .chip').forEach(x=>x.classList.toggle('active',x===b));loadCharts().catch(e=>showError(e.message));}));
@@ -284,7 +312,7 @@ $('adminAddBtn').addEventListener('click',async()=>{
 $('adminChatId').addEventListener('keydown',e=>{if(e.key==='Enter')$('adminAddBtn').click();});
 $('notify').addEventListener('click',async()=>{try{let enabled=!$('notify').classList.contains('on'),r=await rpc('notifications',{enabled});$('notify').classList.toggle('on',!!r.enabled);showOk(r.enabled?'Сповіщення увімкнено.':'Сповіщення вимкнено.');}catch(e){showError(e.message);}});
 if(!tg||!tg.initData){showError('Telegram не передав initData. Відкрий Mini App безпосередньо кнопкою меню бота.');}
-else{loadView('home').catch(e=>showError(e.message));}
+else{startApp().catch(e=>showError(e.message));}
 })();
 </script>
 </body>
