@@ -33,7 +33,7 @@ header{display:flex;justify-content:space-between;align-items:center;margin:4px 
 .chartbox svg{touch-action:pan-y;cursor:crosshair;outline:none}
 .chartbox svg:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:8px}
 
-.admin-add{display:flex;gap:8px;margin:13px 0 9px}.admin-add input{min-width:0;flex:1;background:#111c27;border:1px solid #34485a;border-radius:12px;padding:12px;color:var(--txt);font-size:13px;outline:none}.admin-add input:focus{border-color:var(--blue)}.admin-add button,.admin-row button{border:1px solid #386b91;background:#234b68;color:#f2f8ff;border-radius:12px;padding:10px 13px;font-size:12px;font-weight:700}.admin-note{font-size:10px;line-height:1.5;color:var(--muted);margin:0 0 13px}.admin-count{font-size:11px;font-weight:750;color:#b8d7f2;padding:9px 0;border-top:1px solid var(--line)}.admin-list{display:grid;gap:7px}.admin-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#14202b;border:1px solid #2a3b49;border-radius:12px;padding:9px 10px}.admin-row span{font-size:12px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.admin-row button{padding:7px 10px;background:#402a31;border-color:#6b414b;color:#ffd9de;flex:none}
+.admin-note{font-size:10px;line-height:1.5;color:var(--muted);margin:0 0 13px}.admin-count{font-size:11px;font-weight:750;color:#b8d7f2;padding:9px 0;border-top:1px solid var(--line)}.admin-list{display:grid;gap:7px}.admin-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#14202b;border:1px solid #2a3b49;border-radius:12px;padding:9px 10px}.admin-row span{font-size:12px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.admin-row button{padding:7px 10px;background:#402a31;border-color:#6b414b;color:#ffd9de;flex:none}
 nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(4,1fr);background:#111b26ee;border-top:1px solid var(--line);backdrop-filter:blur(18px);padding:8px 10px calc(8px + env(safe-area-inset-bottom));max-width:620px;margin:auto}.navbtn{background:none;color:var(--muted);font-size:10px;padding:5px 2px}.navbtn .ico{display:block;font-size:20px;margin-bottom:3px}.navbtn.active{color:var(--blue)}
 #bridge{position:fixed;width:1px;height:1px;left:-10px;bottom:-10px;opacity:0;pointer-events:none;border:0}
 @media(max-width:360px){.metric{padding:10px 8px}.metric b{font-size:17px}.app{padding-left:12px;padding-right:12px}}
@@ -54,11 +54,6 @@ nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:re
  <button type="button" id="backHome" class="back-button"><span class="arrow">←</span><span>Назад до огляду</span></button>
  <span id="backCaption" class="back-caption"></span>
 </div>
-<section id="restrictedAccess" class="view hidden">
-<div class="hero"><div class="label">ПРИВАТНІСТЬ POWER MONITOR</div><div class="state">Доступ до показників обмежено</div><div class="sub">Ти можеш керувати власною підпискою на сповіщення. Щоб бот міг надсилати повідомлення, спершу відкрий його чат і надішли /start. Поточні показники, графіки та історія доступні лише користувачам, яким власник надав персональний дозвіл.</div></div>
-<div class="setting"><div><b>Telegram-сповіщення</b><p>Зникнення та відновлення електроенергії</p></div><button class="switch" id="restrictedNotify" type="button" aria-label="Увімкнути або вимкнути сповіщення"><i></i></button></div>
-<div class="card"><b>Як отримати доступ до показників?</b><p class="sub">Звернись до власника бота та надішли свій Telegram ID. Надання дозволу не змінює підписку на сповіщення.</p></div>
-</section>
 <section id="home" class="view active">
 <div class="hero"><div class="label">ПОТОЧНИЙ СТАН</div><div class="state" id="state">Завантаження…</div><div class="sub" id="stateSub">Підключення до моніторингу</div><span class="pill" id="fresh">Очікуємо дані</span></div>
 <div class="metrics"><div class="metric"><span>Напруга</span><b id="voltage">—<i class="unit">В</i></b></div><div class="metric"><span>Струм</span><b id="current">—<i class="unit">А</i></b></div><div class="metric"><span>Потужність</span><b id="power">—<i class="unit">кВт</i></b></div></div>
@@ -78,7 +73,7 @@ nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:re
 </section>
 <section id="outages" class="view"><h2 class="title">Історія відключень</h2><p class="desc">Переходи ON → OFF → ON</p><div class="chips" id="outageRanges"><button class="chip" data-range="24h">24 год</button><button class="chip active" data-range="7d">7 днів</button><button class="chip" data-range="30d">30 днів</button></div><div class="grid2"><div class="stat"><span>Сумарно без світла</span><b id="offTotal">—</b></div><div class="stat"><span>Частка періоду</span><b id="offShare">—</b></div><div class="stat"><span>Кількість епізодів</span><b id="offCount">—</b></div><div class="stat"><span>Середня тривалість</span><b id="offAvg">—</b></div></div><div class="sectionhead"><h2>Останні епізоди</h2></div><div class="card" id="episodes">Завантаження…</div></section>
 <section id="quality" class="view"><h2 class="title">Якість напруги</h2><p class="desc">Аналіз фактичних вимірювань</p><div class="chips" id="qualityRanges"><button class="chip active" data-range="24h">24 год</button><button class="chip" data-range="7d">7 днів</button><button class="chip" data-range="30d">30 днів</button></div><div class="grid2"><div class="stat"><span>Середня напруга</span><b id="qAvg">—</b></div><div class="stat"><span>Мінімум / максимум</span><b id="qMinMax">—</b></div><div class="stat"><span>Нормальна зона</span><b id="qNormal">—</b></div><div class="stat"><span>Низька напруга</span><b id="qLow">—</b></div><div class="stat"><span>Частка низької напруги</span><b id="qPct">—</b></div><div class="stat"><span>Покриття вимірами</span><b id="qCoverage">—</b></div><div class="stat"><span>Оцінене споживання</span><b id="qEnergy">—</b></div><div class="stat"><span>Валідні виміри</span><b id="qSamples">—</b></div></div></section>
-<section id="settings" class="view"><h2 class="title">Налаштування</h2><p class="desc">Керування сповіщеннями та діагностика</p><div class="setting"><div><b>Telegram-сповіщення</b><p>Зникнення та відновлення електроенергії</p></div><button class="switch" id="notify"><i></i></button></div><div class="card"><div class="sectionhead" style="margin:0 0 12px"><h2>Діагностика</h2><span>TOMZN / Tuya</span></div><p class="sub" id="diag">Очікуємо дані…</p></div><div class="card hidden" id="adminPanel" style="margin-top:10px"><div class="sectionhead" style="margin:0 0 10px"><h2>Адміністрування</h2><span>Приватний доступ</span></div><p class="sub">Керування користувачами, які отримують Telegram-сповіщення про стан електроенергії.</p><div class="admin-add"><input id="adminChatId" type="text" inputmode="numeric" autocomplete="off" placeholder="Telegram ID користувача" maxlength="20"><button id="adminAddBtn" type="button">Додати</button></div><p class="admin-note">Користувач має спершу відкрити бота й натиснути /start. Бот не може першим написати новому користувачу.</p><div class="admin-count" id="adminCount">0 підписників</div><div class="admin-list" id="adminList"></div></div></section>
+<section id="settings" class="view"><h2 class="title">Налаштування</h2><p class="desc">Керування сповіщеннями та діагностика</p><div class="setting"><div><b>Telegram-сповіщення</b><p>Увімкни, щоб отримувати повідомлення про зникнення та відновлення електроенергії. Для першої підписки відкрий чат бота й натисни Start.</p></div><button class="switch" id="notify"><i></i></button></div><div class="card"><div class="sectionhead" style="margin:0 0 12px"><h2>Діагностика</h2><span>TOMZN / Tuya</span></div><p class="sub" id="diag">Очікуємо дані…</p></div></section>
 <div id="notice" class="notice hidden"></div>
 </main>
 <nav id="appNav"><button class="navbtn active" data-view="home"><span class="ico">⌂</span>Огляд</button><button class="navbtn" data-view="charts"><span class="ico">▥</span>Графіки</button><button class="navbtn" data-view="outages"><span class="ico">ϟ</span>Відключення</button><button class="navbtn" data-view="settings"><span class="ico">⚙</span>Налаштування</button></nav>
@@ -87,7 +82,7 @@ nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:re
 'use strict';
 const tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
 if(tg){tg.ready();tg.expand();try{tg.setHeaderColor('#101720');tg.setBackgroundColor('#101720');}catch(e){}}
-const $=id=>document.getElementById(id),state={metric:'voltage',chartRange:'24h',outageRange:'7d',qualityRange:'24h',dashboard:null,pending:{},seq:0,rpcQueue:Promise.resolve()};
+const $=id=>document.getElementById(id),state={metric:'voltage',chartRange:'24h',outageRange:'7d',qualityRange:'24h',dashboard:null,pending:{},seq:0,rpcQueue:Promise.resolve(),rpcCache:{},rpcInflight:{}};
 const names={voltage:'Напруга',current:'Струм',power:'Потужність'},units={voltage:'В',current:'А',power:'кВт'};
 const conf=window.POWER_MONITOR_CONFIG||{},gasUrl=String(conf.GAS_EXEC_URL||'').trim(),frame=$('bridge');
 function showError(msg){$('notice').textContent=msg;$('notice').classList.remove('hidden');$('notice').classList.remove('ok');}
@@ -143,11 +138,27 @@ window.addEventListener('message',e=>{
  clearTimeout(p.timer);delete state.pending[String(m.requestId)];
  m.ok?p.resolve(m.result):p.reject(new Error(m.error||'Помилка серверного запиту.'));
 });
-async function rpc(action,payload){
+const rpcCacheTtl={dashboard:8000,chart:30000,outages:30000,quality:45000,report:45000};
+function rpc(action,payload){
+ const cacheable=Object.prototype.hasOwnProperty.call(rpcCacheTtl,action);
+ const key=action+'|'+JSON.stringify(payload||{});
+ const now=Date.now();
+ if(cacheable){
+  const cached=state.rpcCache[key];
+  if(cached&&now-cached.at<rpcCacheTtl[action])return Promise.resolve(cached.value);
+  if(state.rpcInflight[key])return state.rpcInflight[key];
+ }
  const run=()=>rpcOnce(action,payload);
  const task=(state.rpcQueue||Promise.resolve()).then(run);
  state.rpcQueue=task.catch(()=>{});
- return task;
+ const result=task.then(value=>{
+  if(cacheable)state.rpcCache[key]={at:Date.now(),value};
+  return value;
+ }).finally(()=>{
+  if(cacheable)delete state.rpcInflight[key];
+ });
+ if(cacheable)state.rpcInflight[key]=result;
+ return result;
 }
 function goto(view){
  document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===view));
@@ -239,78 +250,18 @@ async function loadCharts(){let d=await rpc('chart',{metric:state.metric,range:s
 async function loadOutages(){let d=await rpc('outages',{range:state.outageRange});$('offTotal').textContent=duration(d.offMs);$('offShare').textContent=fmt(d.sharePct)+'%';$('offCount').textContent=d.outageCount;$('offAvg').textContent=duration(d.averageDurationMs);let list=d.episodes||[];$('episodes').innerHTML=list.length?list.map(x=>'<div class="episode"><b>'+date(x.start)+(x.ongoing?' — триває':' — '+date(x.end))+'</b><strong>'+duration(x.durationMs)+'</strong><small>'+(x.startedBeforePeriod?'Почалося до початку періоду':'Відключення')+'</small></div>').join(''):'<div class="muted">Відключень за період не зафіксовано.</div>';}
 async function loadQuality(){let d=await rpc('quality',{range:state.qualityRange});$('qAvg').textContent=fmt(d.averageVoltage)+' В';$('qMinMax').textContent=fmt(d.minVoltage)+' / '+fmt(d.maxVoltage)+' В';$('qNormal').textContent=duration(d.normalVoltageMs);$('qLow').textContent=duration(d.lowVoltageMs);$('qPct').textContent=fmt(d.lowVoltagePct)+'%';$('qCoverage').textContent=fmt(d.coveragePct)+'%';$('qEnergy').textContent=fmt(d.estimatedEnergyKwh,2)+' кВт·год';$('qSamples').textContent=d.validVoltageSamples;}
 async function startApp(){
- const access=await rpc('access_info');
- if(!access.allowed){
-  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
-  $('restrictedAccess').classList.remove('hidden');
-  $('restrictedAccess').classList.add('active');
-  $('appNav').classList.add('hidden');
-  $('refresh').classList.add('hidden');
-  $('restrictedNotify').classList.toggle('on',!!access.subscribed);
-  return;
- }
  $('appNav').classList.remove('hidden');
  $('refresh').classList.remove('hidden');
  await loadView('home');
 }
-$('restrictedNotify').addEventListener('click',async()=>{
- try{
-  const enabled=!$('restrictedNotify').classList.contains('on');
-  const result=await rpc('notifications',{enabled});
-  $('restrictedNotify').classList.toggle('on',!!result.enabled);
-  showOk(result.enabled?'Сповіщення увімкнено.':'Сповіщення вимкнено.');
- }catch(e){showError(e.message);}
-});
-async function loadView(view){if(view==='home'||view==='settings')await loadHome();if(view==='settings')await loadAdminSubscribers();if(view==='charts')await loadCharts();if(view==='outages')await loadOutages();if(view==='quality')await loadQuality();}
+async function loadView(view){if(view==='home'||view==='settings')await loadHome();if(view==='charts')await loadCharts();if(view==='outages')await loadOutages();if(view==='quality')await loadQuality();}
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>goto(b.dataset.view)));
 document.querySelectorAll('#metrics [data-metric]').forEach(b=>b.addEventListener('click',()=>{state.metric=b.dataset.metric;document.querySelectorAll('#metrics .chip').forEach(x=>x.classList.toggle('active',x===b));loadCharts().catch(e=>showError(e.message));}));
 document.querySelectorAll('#chartRanges [data-range]').forEach(b=>b.addEventListener('click',()=>{state.chartRange=b.dataset.range;document.querySelectorAll('#chartRanges .chip').forEach(x=>x.classList.toggle('active',x===b));loadCharts().catch(e=>showError(e.message));}));
 document.querySelectorAll('#outageRanges [data-range]').forEach(b=>b.addEventListener('click',()=>{state.outageRange=b.dataset.range;document.querySelectorAll('#outageRanges .chip').forEach(x=>x.classList.toggle('active',x===b));loadOutages().catch(e=>showError(e.message));}));
 document.querySelectorAll('#qualityRanges [data-range]').forEach(b=>b.addEventListener('click',()=>{state.qualityRange=b.dataset.range;document.querySelectorAll('#qualityRanges .chip').forEach(x=>x.classList.toggle('active',x===b));loadQuality().catch(e=>showError(e.message));}));
-$('refresh').addEventListener('click',async()=>{try{$('refresh').textContent='…';await rpc('refresh');await loadView(state.activeView);showOk('Дані оновлено.');}catch(e){showError(e.message);}finally{$('refresh').textContent='↻';}});
-function renderAdminSubscribers(data){
- const subscribers=Array.isArray(data.subscribers)?data.subscribers:[];
- $('adminCount').textContent=String(data.count??subscribers.length)+' підписників';
- const list=$('adminList');
- list.innerHTML='';
- if(!subscribers.length){const empty=document.createElement('p');empty.className='sub';empty.textContent='Список підписників порожній.';list.appendChild(empty);return;}
- subscribers.forEach(chatId=>{
-  const row=document.createElement('div');row.className='admin-row';
-  const label=document.createElement('span');label.textContent=String(chatId);
-  const remove=document.createElement('button');remove.type='button';remove.textContent='Видалити';
-  remove.addEventListener('click',()=>removeAdminSubscriber(String(chatId)));
-  row.appendChild(label);row.appendChild(remove);list.appendChild(row);
- });
-}
-async function loadAdminSubscribers(){
- const panel=$('adminPanel');panel.classList.add('hidden');
- try{
-  const data=await rpc('admin_subscribers',{op:'list'});
-  renderAdminSubscribers(data);
-  panel.classList.remove('hidden');
- }catch(e){
-  // Non-admin users never see the panel; authorization is enforced by Apps Script.
-  panel.classList.add('hidden');
- }
-}
-async function removeAdminSubscriber(chatId){
- if(!window.confirm('Видалити Telegram ID '+chatId+' зі списку сповіщень?'))return;
- try{
-  const data=await rpc('admin_subscribers',{op:'remove',chatId});
-  renderAdminSubscribers(data);showOk('Підписника видалено.');
- }catch(e){showError(e.message);}
-}
-$('adminAddBtn').addEventListener('click',async()=>{
- const chatId=String($('adminChatId').value||'').trim();
- if(!/^\\d{5,20}$/.test(chatId)){showError('Введи числовий Telegram ID (5–20 цифр).');return;}
- try{
-  const data=await rpc('admin_subscribers',{op:'add',chatId});
-  $('adminChatId').value='';
-  renderAdminSubscribers(data);showOk('Підписника додано до списку.');
- }catch(e){showError(e.message);}
-});
-$('adminChatId').addEventListener('keydown',e=>{if(e.key==='Enter')$('adminAddBtn').click();});
-$('notify').addEventListener('click',async()=>{try{let enabled=!$('notify').classList.contains('on'),r=await rpc('notifications',{enabled});$('notify').classList.toggle('on',!!r.enabled);showOk(r.enabled?'Сповіщення увімкнено.':'Сповіщення вимкнено.');}catch(e){showError(e.message);}});
+$('refresh').addEventListener('click',async()=>{try{$('refresh').textContent='…';const refreshed=await rpc('refresh');state.rpcCache={};state.rpcCache['dashboard|{}']={at:Date.now(),value:refreshed};await loadView(state.activeView);showOk('Дані оновлено.');}catch(e){showError(e.message);}finally{$('refresh').textContent='↻';}});
+$('notify').addEventListener('click',async()=>{try{let enabled=!$('notify').classList.contains('on'),r=await rpc('notifications',{enabled});state.rpcCache={};$('notify').classList.toggle('on',!!r.enabled);showOk(r.enabled?'Сповіщення увімкнено.':'Сповіщення вимкнено.');}catch(e){showError(e.message);}});
 if(!tg||!tg.initData){showError('Telegram не передав initData. Відкрий Mini App безпосередньо кнопкою меню бота.');}
 else{startApp().catch(e=>showError(e.message));}
 })();
