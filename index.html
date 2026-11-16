@@ -21,6 +21,33 @@ header{display:flex;justify-content:space-between;align-items:center;margin:4px 
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat b{font-size:18px;display:block;margin-top:7px}.episode{padding:13px 0;border-bottom:1px solid var(--line)}.episode:last-child{border:0}.episode b{font-size:13px}.episode small{display:block;color:var(--muted);font-size:10px;margin-top:5px}.episode strong{float:right;color:var(--red)}
 .setting{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:15px;margin-bottom:10px}.setting p{font-size:11px;color:var(--muted);margin:5px 0 0}.switch{width:47px;height:27px;border-radius:99px;background:#435160;padding:3px;flex:none}.switch i{display:block;width:21px;height:21px;border-radius:50%;background:white;transition:transform .18s}.switch.on{background:#168b61}.switch.on i{transform:translateX(20px)}
 .notice{background:#35232a;border:1px solid #67404a;color:#f0bdc5;padding:13px;border-radius:14px;font-size:11px;line-height:1.5;margin-top:13px}.notice.ok{background:#173329;border-color:#285a46;color:#a9e4c8}.muted{color:var(--muted)}.hidden{display:none!important}
+.dtek-card{margin-top:18px;padding:16px;background:linear-gradient(155deg,#1b2a3a,#172331);border-color:#30465a}
+.dtek-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.dtek-title{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px}
+.dtek-status{font-size:10px;font-weight:800;letter-spacing:.5px;color:var(--green)}
+.dtek-meta{font-size:11px;color:var(--muted);margin-top:10px}
+.dtek-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px;background:#101b29;border-radius:13px;margin:14px 0 17px}
+.dtek-tab{border:0;border-radius:10px;padding:10px 8px;background:transparent;color:#9eafc0;font-size:12px;font-weight:750}
+.dtek-tab.active{background:#354b63;color:#fff;box-shadow:0 2px 8px #0003}
+.dtek-queue-line{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 12px}
+.dtek-queue-line b{font-size:15px}
+.dtek-queue-line span{font-size:11px;color:#c0ccda}
+.dtek-intervals{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+.dtek-interval{padding:7px 10px;border:1px solid #9d7743;background:#4b3c2a;color:#fff0d2;border-radius:10px;font-size:11px;font-weight:750}
+.dtek-bar-wrap{position:relative;padding-top:25px;margin:0 0 9px}
+.dtek-bar{height:23px;display:grid;grid-template-columns:repeat(24,minmax(0,1fr));gap:2px;padding:0 2px;background:#0d1825;border:1px solid #33475a;border-radius:99px;overflow:hidden}
+.dtek-hour{min-width:0;height:100%;border-radius:2px}
+.dtek-now{position:absolute;top:0;bottom:-2px;width:2px;background:#ffd22e;z-index:2;box-shadow:0 0 0 1px #ffd22e33}
+.dtek-now:before{content:attr(data-time);position:absolute;top:-1px;left:7px;background:#ffd22e;color:#17202a;font-size:10px;font-weight:900;padding:4px 7px;border-radius:7px;white-space:nowrap}
+.dtek-timeline{display:flex;justify-content:space-between;color:#8294a7;font-size:10px;margin-top:10px}
+.dtek-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;padding-top:12px;border-top:1px solid #2c4052}
+.dtek-legend span{display:flex;align-items:center;gap:5px;color:#a9b8c8;font-size:10px}
+.dtek-dot{width:8px;height:8px;border-radius:3px;display:inline-block}
+.dtek-foot{font-size:10px;line-height:1.5;color:#899bad;margin-top:13px}
+.dtek-links{display:flex;justify-content:space-between;gap:12px;margin-top:10px;font-size:10px}
+.dtek-links a{color:#80bfff;text-decoration:none}
+.dtek-refresh{background:#263b50;border:1px solid #3b5872;color:#d9e9f7;border-radius:10px;padding:7px 10px;font-size:13px}
+.dtek-empty{padding:22px 8px;text-align:center;color:var(--muted);font-size:12px}
 .back-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 15px}
 .back-button{display:inline-flex;align-items:center;gap:9px;background:#202e3b;border:1px solid #34485a;color:#eaf3fb;border-radius:13px;padding:10px 14px;font-size:13px;font-weight:700}
 .back-button .arrow{font-size:19px;line-height:1;color:var(--blue)}
@@ -64,6 +91,25 @@ nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:re
 <button class="tile" data-view="quality"><span class="ico">◈</span><b>Якість напруги</b><small>Аналіз вимірювань</small></button>
 <button class="tile" data-view="settings"><span class="ico">⚙</span><b>Налаштування</b><small>Сповіщення та діагностика</small></button>
 </div>
+<section class="card dtek-card" id="dtekCard">
+ <div class="dtek-head">
+  <div class="dtek-title">📅 Графіки ДТЕК <span style="font-size:10px;color:var(--muted);font-weight:600">Київська область</span></div>
+  <div style="display:flex;align-items:center;gap:8px"><span class="dtek-status" id="dtekStatus">ЗАВАНТАЖЕННЯ</span><button class="dtek-refresh" id="dtekRefresh" type="button" aria-label="Оновити графік">↻</button></div>
+ </div>
+ <div class="dtek-meta" id="dtekUpdated">Завантаження графіка…</div>
+ <div class="dtek-tabs" id="dtekTabs">
+  <button class="dtek-tab active" type="button" data-day="today">Сьогодні</button>
+  <button class="dtek-tab" type="button" data-day="tomorrow">Завтра</button>
+ </div>
+ <div id="dtekSchedule"><div class="dtek-empty">Отримуємо графік…</div></div>
+ <div class="dtek-legend">
+  <span><i class="dtek-dot" style="background:#27c56b"></i>Світло є</span>
+  <span><i class="dtek-dot" style="background:#ed4d59"></i>Світла немає</span>
+  <span><i class="dtek-dot" style="background:#e4ad45"></i>Можливе відключення</span>
+ </div>
+ <div class="dtek-foot">Графік 4.1 — інформаційний прогноз. Аварійні та екстрені відключення можуть не відповідати плану. Перевіряй актуальність у ДТЕК.</div>
+ <div class="dtek-links"><a href="https://www.dtek-krem.com.ua/ua/shutdowns" target="_blank" rel="noopener">Офіційний сайт ДТЕК ↗</a><a href="https://github.com/Baskerville42/outage-data-ua" target="_blank" rel="noopener">Джерело JSON ↗</a></div>
+</section>
 <div class="sectionhead"><h2>Останні 24 години</h2><span>Журнал переходів</span></div><div class="grid2"><div class="stat"><span>Час без світла</span><b id="homeOff">—</b></div><div class="stat"><span>Відключень</span><b id="homeCount">—</b></div></div>
 </section>
 <section id="charts" class="view"><h2 class="title">Графіки вимірювань</h2><p class="desc">Історія напруги, струму та навантаження TOMZN</p>
@@ -82,7 +128,7 @@ nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:re
 'use strict';
 const tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
 if(tg){tg.ready();tg.expand();try{tg.setHeaderColor('#101720');tg.setBackgroundColor('#101720');}catch(e){}}
-const $=id=>document.getElementById(id),state={metric:'voltage',chartRange:'24h',outageRange:'7d',qualityRange:'24h',dashboard:null,pending:{},seq:0,rpcQueue:Promise.resolve(),rpcCache:{},rpcInflight:{}};
+const $=id=>document.getElementById(id),state={metric:'voltage',chartRange:'24h',outageRange:'7d',qualityRange:'24h',dtekDay:'today',dtekSchedule:null,dashboard:null,pending:{},seq:0,rpcQueue:Promise.resolve(),rpcCache:{},rpcInflight:{}};
 const names={voltage:'Напруга',current:'Струм',power:'Потужність'},units={voltage:'В',current:'А',power:'кВт'};
 const conf=window.POWER_MONITOR_CONFIG||{},gasUrl=String(conf.GAS_EXEC_URL||'').trim(),frame=$('bridge');
 function showError(msg){$('notice').textContent=msg;$('notice').classList.remove('hidden');$('notice').classList.remove('ok');}
@@ -138,7 +184,7 @@ window.addEventListener('message',e=>{
  clearTimeout(p.timer);delete state.pending[String(m.requestId)];
  m.ok?p.resolve(m.result):p.reject(new Error(m.error||'Помилка серверного запиту.'));
 });
-const rpcCacheTtl={dashboard:8000,chart:30000,outages:30000,quality:45000,report:45000};
+const rpcCacheTtl={dashboard:8000,chart:30000,outages:30000,quality:45000,report:45000,dtek_schedule:300000};
 function rpc(action,payload){
  const cacheable=Object.prototype.hasOwnProperty.call(rpcCacheTtl,action);
  const key=action+'|'+JSON.stringify(payload||{});
@@ -246,6 +292,80 @@ function drawChart(data){
  });
  selectPoint(coords.length-1);
 }
+
+function dtekDateLabel(iso){return String(iso||'').split('-').reverse().join('.');}
+function dtekSlotStyle(status){
+ const green='#27c56b',red='#ed4d59',amber='#e4ad45',unknown='#647386';
+ if(status==='yes')return green;
+ if(status==='no')return red;
+ if(status==='first')return 'linear-gradient(to right,'+red+' 0 50%,'+green+' 50% 100%)';
+ if(status==='second')return 'linear-gradient(to right,'+green+' 0 50%,'+red+' 50% 100%)';
+ if(status==='maybe')return amber;
+ if(status==='mfirst')return 'linear-gradient(to right,'+amber+' 0 50%,'+green+' 50% 100%)';
+ if(status==='msecond')return 'linear-gradient(to right,'+green+' 0 50%,'+amber+' 50% 100%)';
+ return unknown;
+}
+function dtekStatusText(status){
+ const map={yes:'Світло є',no:'Світла немає',first:'Відключення першої половини години',second:'Відключення другої половини години',maybe:'Можливе відключення',mfirst:'Можливе відключення першої половини години',msecond:'Можливе відключення другої половини години'};
+ return map[status]||'Немає даних';
+}
+function renderDtekSchedule(){
+ const data=state.dtekSchedule;
+ if(!data)return;
+ const day=data[state.dtekDay]||{};
+ const updated=data.lastUpdated?new Date(data.lastUpdated):null;
+ const age=updated?Date.now()-updated.getTime():Infinity;
+ $('dtekStatus').textContent=age<15*60000?'АКТУАЛЬНО':age<60*60000?'Є ЗАТРИМКА':'СТАРІ ДАНІ';
+ $('dtekStatus').style.color=age<15*60000?'var(--green)':age<60*60000?'var(--amber)':'var(--red)';
+ $('dtekUpdated').textContent='Перевірено: '+(updated?date(updated.getTime()):'—')+' · Графік на '+dtekDateLabel(day.date);
+ document.querySelectorAll('#dtekTabs [data-day]').forEach(b=>b.classList.toggle('active',b.dataset.day===state.dtekDay));
+ const slots=Array.isArray(day.slots)?day.slots:[];
+ if(!slots.length||slots.every(s=>s.status==='unknown')){
+  $('dtekSchedule').innerHTML='<div class="dtek-empty">Графік для черги 4.1 поки не опублікований у джерелі.</div>';
+  return;
+ }
+ let offMinutes=0;
+ const intervals=[];
+ let start=null, end=null;
+ slots.forEach((slot,i)=>{
+  const status=slot.status;
+  const minutes=status==='no'?60:(status==='first'||status==='second'?30:0);
+  offMinutes+=minutes;
+  if(minutes){
+   const a=i+(status==='second'?0.5:0),b=i+(status==='first'?0.5:1);
+   if(start===null){start=a;end=b;}
+   else if(Math.abs(start===null?0:end-a)<0.001){end=b;}
+   else {intervals.push([start,end]);start=a;end=b;}
+  }else if(start!==null){intervals.push([start,end]);start=null;end=null;}
+ });
+ if(start!==null)intervals.push([start,end]);
+ const toTime=v=>{const mins=Math.round(v*60),h=Math.floor(mins/60)%24,m=mins%60;return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');};
+ const intervalHtml=intervals.length?intervals.map(x=>'<span class="dtek-interval">'+toTime(x[0])+'–'+toTime(x[1])+'</span>').join(''):'<span style="font-size:11px;color:var(--muted)">Планових відключень не позначено</span>';
+ const current=new Date();
+ const isToday=state.dtekDay==='today'&&day.date===new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Kyiv',year:'numeric',month:'2-digit',day:'2-digit'}).format(current);
+ const nowHour=Number(new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Kyiv',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(current).slice(0,2));
+ const nowMinute=Number(new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Kyiv',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(current).slice(3,5));
+ const nowPct=(nowHour+nowMinute/60)/24*100;
+ const bar=slots.map((slot,i)=>'<div class="dtek-hour" title="'+String(i).padStart(2,'0')+':00 · '+dtekStatusText(slot.status)+'" style="background:'+dtekSlotStyle(slot.status)+'"></div>').join('');
+ const marker=isToday?'<div class="dtek-now" data-time="'+String(nowHour).padStart(2,'0')+':'+String(nowMinute).padStart(2,'0')+'" style="left:calc('+nowPct+'% + 2px)"></div>':'';
+ const offLabel=offMinutes?Math.floor(offMinutes/60)+' год'+(offMinutes%60?' '+offMinutes%60+' хв':''):'0 год';
+ const dayType=day.type==='fact'?'Фактичний графік':'Прогнозний графік';
+ $('dtekSchedule').innerHTML='<div class="dtek-queue-line"><b>Черга 4.1</b><span>Без світла: '+offLabel+'</span></div><div class="dtek-intervals">'+intervalHtml+'</div><div class="dtek-bar-wrap">'+marker+'<div class="dtek-bar">'+bar+'</div></div><div class="dtek-timeline"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div><div style="font-size:10px;color:var(--muted);margin-top:10px">'+dayType+' · Часовий пояс: Київ</div>';
+}
+async function loadDtekSchedule(force){
+ try{
+  if(force){delete state.rpcCache['dtek_schedule|{}'];}
+  $('dtekSchedule').innerHTML='<div class="dtek-empty">Отримуємо графік ДТЕК…</div>';
+  const data=await rpc('dtek_schedule',{});
+  state.dtekSchedule=data;
+  renderDtekSchedule();
+ }catch(e){
+  $('dtekStatus').textContent='НЕДОСТУПНО';
+  $('dtekStatus').style.color='var(--red)';
+  $('dtekSchedule').innerHTML='<div class="dtek-empty">'+String(e.message||'Не вдалося завантажити графік')+'</div>';
+ }
+}
+
 async function loadCharts(){let d=await rpc('chart',{metric:state.metric,range:state.chartRange});$('chartName').textContent=names[state.metric]+' · '+state.chartRange;$('chartCount').textContent=d.count+' точок';drawChart(d);$('avg').textContent=fmt(d.average)+' '+units[state.metric];$('min').textContent=fmt(d.min)+' '+units[state.metric];$('max').textContent=fmt(d.max)+' '+units[state.metric];}
 async function loadOutages(){let d=await rpc('outages',{range:state.outageRange});$('offTotal').textContent=duration(d.offMs);$('offShare').textContent=fmt(d.sharePct)+'%';$('offCount').textContent=d.outageCount;$('offAvg').textContent=duration(d.averageDurationMs);let list=d.episodes||[];$('episodes').innerHTML=list.length?list.map(x=>'<div class="episode"><b>'+date(x.start)+(x.ongoing?' — триває':' — '+date(x.end))+'</b><strong>'+duration(x.durationMs)+'</strong><small>'+(x.startedBeforePeriod?'Почалося до початку періоду':'Відключення')+'</small></div>').join(''):'<div class="muted">Відключень за період не зафіксовано.</div>';}
 async function loadQuality(){let d=await rpc('quality',{range:state.qualityRange});$('qAvg').textContent=fmt(d.averageVoltage)+' В';$('qMinMax').textContent=fmt(d.minVoltage)+' / '+fmt(d.maxVoltage)+' В';$('qNormal').textContent=duration(d.normalVoltageMs);$('qLow').textContent=duration(d.lowVoltageMs);$('qPct').textContent=fmt(d.lowVoltagePct)+'%';$('qCoverage').textContent=fmt(d.coveragePct)+'%';$('qEnergy').textContent=fmt(d.estimatedEnergyKwh,2)+' кВт·год';$('qSamples').textContent=d.validVoltageSamples;}
@@ -255,12 +375,14 @@ async function startApp(){
  $('refresh').classList.remove('hidden');
  await loadView('home');
 }
-async function loadView(view){if(view==='home'||view==='settings')await loadHome();if(view==='charts')await loadCharts();if(view==='outages')await loadOutages();if(view==='quality')await loadQuality();}
+async function loadView(view){if(view==='home')await Promise.all([loadHome(),loadDtekSchedule()]);if(view==='settings')await loadHome();if(view==='charts')await loadCharts();if(view==='outages')await loadOutages();if(view==='quality')await loadQuality();}
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>goto(b.dataset.view)));
 document.querySelectorAll('#metrics [data-metric]').forEach(b=>b.addEventListener('click',()=>{state.metric=b.dataset.metric;document.querySelectorAll('#metrics .chip').forEach(x=>x.classList.toggle('active',x===b));loadCharts().catch(e=>showError(e.message));}));
 document.querySelectorAll('#chartRanges [data-range]').forEach(b=>b.addEventListener('click',()=>{state.chartRange=b.dataset.range;document.querySelectorAll('#chartRanges .chip').forEach(x=>x.classList.toggle('active',x===b));loadCharts().catch(e=>showError(e.message));}));
 document.querySelectorAll('#outageRanges [data-range]').forEach(b=>b.addEventListener('click',()=>{state.outageRange=b.dataset.range;document.querySelectorAll('#outageRanges .chip').forEach(x=>x.classList.toggle('active',x===b));loadOutages().catch(e=>showError(e.message));}));
 document.querySelectorAll('#qualityRanges [data-range]').forEach(b=>b.addEventListener('click',()=>{state.qualityRange=b.dataset.range;document.querySelectorAll('#qualityRanges .chip').forEach(x=>x.classList.toggle('active',x===b));loadQuality().catch(e=>showError(e.message));}));
+document.querySelectorAll('#dtekTabs [data-day]').forEach(b=>b.addEventListener('click',()=>{state.dtekDay=b.dataset.day;renderDtekSchedule();}));
+$('dtekRefresh').addEventListener('click',()=>loadDtekSchedule(true));
 $('refresh').addEventListener('click',async()=>{try{$('refresh').textContent='…';const refreshed=await rpc('refresh');state.rpcCache={};state.rpcCache['dashboard|{}']={at:Date.now(),value:refreshed};await loadView(state.activeView);showOk('Дані оновлено.');}catch(e){showError(e.message);}finally{$('refresh').textContent='↻';}});
 $('notify').addEventListener('click',async()=>{try{let enabled=!$('notify').classList.contains('on'),r=await rpc('notifications',{enabled});state.rpcCache={};$('notify').classList.toggle('on',!!r.enabled);showOk(r.enabled?'Сповіщення увімкнено.':'Сповіщення вимкнено.');}catch(e){showError(e.message);}});
 if(!tg||!tg.initData){showError('Telegram не передав initData. Відкрий Mini App безпосередньо кнопкою меню бота.');}
