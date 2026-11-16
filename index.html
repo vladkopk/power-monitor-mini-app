@@ -19,6 +19,43 @@ header{display:flex;justify-content:space-between;align-items:center;margin:4px 
 .view{display:none}.view.active{display:block}.title{font-size:21px;font-weight:800;margin:4px 0 5px}.desc{font-size:12px;color:var(--muted);margin:0 0 16px}.chips{display:flex;gap:7px;overflow:auto;padding:2px 0 8px;scrollbar-width:none}.chip{background:var(--panel2);border:1px solid var(--line);color:#a9bac8;border-radius:99px;padding:9px 12px;font-size:11px;white-space:nowrap}.chip.active{background:#2b5c83;border-color:#438bc3;color:#fff}
 .chartbox{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:8px}.chartbox svg{width:100%;height:190px;display:block}.chartstats{display:flex;gap:18px;border-top:1px solid var(--line);padding-top:11px;margin-top:8px}.chartstats span{font-size:10px;color:var(--muted)}.chartstats b{display:block;color:var(--txt);font-size:13px;margin-top:4px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.stat b{font-size:18px;display:block;margin-top:7px}.episode{padding:13px 0;border-bottom:1px solid var(--line)}.episode:last-child{border:0}.episode b{font-size:13px}.episode small{display:block;color:var(--muted);font-size:10px;margin-top:5px}.episode strong{float:right;color:var(--red)}
+
+.outage-calendar{margin:14px 0 18px;padding:15px;background:linear-gradient(155deg,#1b2a3a,#172331);border-color:#30465a}
+.calendar-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+.calendar-kicker{font-size:9px;font-weight:800;letter-spacing:1.2px;color:#90a6ba}
+.calendar-top h3{font-size:17px;text-transform:capitalize;margin:5px 0 0}
+.calendar-source{font-size:9px;color:#a7b8c8;text-align:right;line-height:1.4;max-width:110px}
+.calendar-weekdays,.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.calendar-weekdays{margin-bottom:7px}
+.calendar-weekdays span{text-align:center;color:#8698aa;font-size:9px;font-weight:750;padding:3px 0}
+.calendar-day,.calendar-empty{min-width:0;aspect-ratio:1/1;border-radius:11px}
+.calendar-day{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:3px 0;background:#202d39;border:1px solid #364452;color:#eaf1f7;font:inherit;cursor:pointer}
+.calendar-day b{font-size:12px;line-height:1;font-weight:800}
+.calendar-day small{font-size:8px;line-height:1;color:#a9b9c8}
+.calendar-day.status-on{background:#173b30;border-color:#28634c}
+.calendar-day.status-off{background:#44252d;border-color:#79404c}
+.calendar-day.status-mixed{background:#443a27;border-color:#81652f}
+.calendar-day.status-partial{background:#393342;border-color:#65556e}
+.calendar-day.status-unknown,.calendar-day.status-future{background:#202d39;border-color:#364452;color:#9eacb9}
+.calendar-day.selected{outline:2px solid #80c4ff;outline-offset:1px;z-index:1}
+.calendar-day:disabled{cursor:default;opacity:.7}
+.calendar-legend{display:flex;flex-wrap:wrap;gap:9px 13px;margin:13px 0 14px;padding-top:12px;border-top:1px solid #2d4051}
+.calendar-legend span{display:flex;align-items:center;gap:5px;color:#aab9c7;font-size:9px}
+.calendar-legend i{width:8px;height:8px;border-radius:3px;display:inline-block}
+.calendar-kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.calendar-kpi{background:#14212d;border:1px solid #304354;border-radius:12px;padding:10px;min-width:0}
+.calendar-kpi span{display:block;color:#91a3b5;font-size:9px;line-height:1.3}
+.calendar-kpi b{display:block;color:#f2f6fa;font-size:14px;margin-top:6px;overflow-wrap:anywhere}
+.calendar-selected{margin-top:10px;padding:12px;background:#111d28;border:1px solid #304354;border-radius:13px}
+.calendar-selected-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}
+.calendar-selected-head b{font-size:12px}
+.calendar-selected-head span{font-size:9px;color:#aab9c7;text-align:right}
+.calendar-detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.calendar-detail-grid div{min-width:0}
+.calendar-detail-grid span{display:block;font-size:9px;color:#91a3b5}
+.calendar-detail-grid b{display:block;font-size:11px;margin-top:5px;overflow-wrap:anywhere}
+.calendar-note{font-size:9px;line-height:1.45;color:#91a3b5;margin-top:9px}
+@media(max-width:360px){.calendar-weekdays,.calendar-grid{gap:4px}.calendar-day,.calendar-empty{border-radius:8px}.calendar-day b{font-size:11px}.calendar-day small{font-size:7px}.calendar-selected{padding:10px}}
 .setting{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:15px;margin-bottom:10px}.setting p{font-size:11px;color:var(--muted);margin:5px 0 0}.switch{width:47px;height:27px;border-radius:99px;background:#435160;padding:3px;flex:none}.switch i{display:block;width:21px;height:21px;border-radius:50%;background:white;transition:transform .18s}.switch.on{background:#168b61}.switch.on i{transform:translateX(20px)}
 .notice{background:#35232a;border:1px solid #67404a;color:#f0bdc5;padding:13px;border-radius:14px;font-size:11px;line-height:1.5;margin-top:13px}.notice.ok{background:#173329;border-color:#285a46;color:#a9e4c8}.muted{color:var(--muted)}.hidden{display:none!important}
 .dtek-card{margin-top:18px;padding:16px;background:linear-gradient(155deg,#1b2a3a,#172331);border-color:#30465a}
@@ -127,7 +164,37 @@ nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:re
 <div class="chips" id="chartRanges"><button class="chip" data-range="1h">1 год</button><button class="chip" data-range="6h">6 год</button><button class="chip" data-range="12h">12 год</button><button class="chip active" data-range="24h">24 год</button><button class="chip" data-range="3d">3 дні</button><button class="chip" data-range="7d">7 днів</button><button class="chip" data-range="30d">30 днів</button></div>
 <div class="chartbox"><div class="sectionhead" style="margin:0"><h2 id="chartName">Напруга · 24 год</h2><span id="chartCount">— точок</span></div><div class="chart-inspector"><div><span class="chart-inspector-label">Вибране вимірювання</span><strong class="chart-inspector-value" id="pointValue">—</strong></div><div class="chart-inspector-time" id="pointTime">Торкніться графіка</div></div><div class="chart-hint">Проведіть пальцем по графіку або натисніть на точку, щоб побачити точне значення</div><div id="chart"><div class="muted" style="padding:55px 0;text-align:center">Завантаження графіка…</div></div><div class="chartstats"><div><span>Середнє</span><b id="avg">—</b></div><div><span>Мінімум</span><b id="min">—</b></div><div><span>Максимум</span><b id="max">—</b></div></div></div>
 </section>
-<section id="outages" class="view"><h2 class="title">Історія відключень</h2><p class="desc">Переходи ON → OFF → ON</p><div class="chips" id="outageRanges"><button class="chip" data-range="24h">24 год</button><button class="chip active" data-range="7d">7 днів</button><button class="chip" data-range="30d">30 днів</button></div><div class="grid2"><div class="stat"><span>Сумарно без світла</span><b id="offTotal">—</b></div><div class="stat"><span>Частка періоду</span><b id="offShare">—</b></div><div class="stat"><span>Кількість епізодів</span><b id="offCount">—</b></div><div class="stat"><span>Середня тривалість</span><b id="offAvg">—</b></div></div><div class="sectionhead"><h2>Останні епізоди</h2></div><div class="card" id="episodes">Завантаження…</div></section>
+<section id="outages" class="view">
+<h2 class="title">Історія відключень</h2>
+<p class="desc">Фактична доступність електроенергії за журналом TOMZN</p>
+<div class="card outage-calendar" id="outageCalendarCard">
+ <div class="calendar-top">
+  <div><div class="calendar-kicker">ФАКТИЧНИЙ КАЛЕНДАР</div><h3 id="outageCalendarMonth">Завантаження…</h3></div>
+  <div class="calendar-source" id="outageCalendarSource">Дані TOMZN</div>
+ </div>
+ <div class="calendar-weekdays" aria-hidden="true"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Нд</span></div>
+ <div class="calendar-grid" id="outageCalendarGrid"><div class="dtek-empty" style="grid-column:1/-1">Завантажуємо календар…</div></div>
+ <div class="calendar-legend">
+  <span><i style="background:#27c56b"></i>Світло було</span>
+  <span><i style="background:#ed4d59"></i>Без світла</span>
+  <span><i style="background:#e4ad45"></i>Змішаний день</span>
+  <span><i style="background:#9b82a8"></i>Часткові дані</span>
+  <span><i style="background:#647386"></i>Немає даних</span>
+ </div>
+ <div class="calendar-kpis">
+  <div class="calendar-kpi"><span>Підтверджено зі світлом</span><b id="calendarOn">—</b></div>
+  <div class="calendar-kpi"><span>Підтверджено без світла</span><b id="calendarOff">—</b></div>
+  <div class="calendar-kpi"><span>Доступність серед відомого часу</span><b id="calendarAvailability">—</b></div>
+  <div class="calendar-kpi"><span>Покриття журналом</span><b id="calendarCoverage">—</b></div>
+ </div>
+ <div class="calendar-selected" id="calendarSelected"><div class="muted">Оберіть день у календарі.</div></div>
+ <div class="calendar-note">Статистика обчислюється лише за підтвердженими станами. Періоди втрати зв’язку або невизначених вимірювань позначаються як невідомі та не зараховуються до часу зі світлом. Майбутній час не враховується.</div>
+</div>
+<div class="sectionhead"><h2>Детальна статистика</h2><span>Період</span></div>
+<div class="chips" id="outageRanges"><button class="chip" data-range="24h">24 год</button><button class="chip active" data-range="7d">7 днів</button><button class="chip" data-range="30d">30 днів</button></div>
+<div class="grid2"><div class="stat"><span>Сумарно без світла</span><b id="offTotal">—</b></div><div class="stat"><span>Частка періоду</span><b id="offShare">—</b></div><div class="stat"><span>Кількість епізодів</span><b id="offCount">—</b></div><div class="stat"><span>Середня тривалість</span><b id="offAvg">—</b></div></div>
+<div class="sectionhead"><h2>Останні епізоди</h2></div><div class="card" id="episodes">Завантаження…</div>
+</section>
 <section id="quality" class="view"><h2 class="title">Якість напруги</h2><p class="desc">Аналіз фактичних вимірювань</p><div class="chips" id="qualityRanges"><button class="chip active" data-range="24h">24 год</button><button class="chip" data-range="7d">7 днів</button><button class="chip" data-range="30d">30 днів</button></div><div class="grid2"><div class="stat"><span>Середня напруга</span><b id="qAvg">—</b></div><div class="stat"><span>Мінімум / максимум</span><b id="qMinMax">—</b></div><div class="stat"><span>Нормальна зона</span><b id="qNormal">—</b></div><div class="stat"><span>Низька напруга</span><b id="qLow">—</b></div><div class="stat"><span>Частка низької напруги</span><b id="qPct">—</b></div><div class="stat"><span>Покриття вимірами</span><b id="qCoverage">—</b></div><div class="stat"><span>Оцінене споживання</span><b id="qEnergy">—</b></div><div class="stat"><span>Валідні виміри</span><b id="qSamples">—</b></div></div></section>
 <section id="settings" class="view"><h2 class="title">Налаштування</h2><p class="desc">Керування сповіщеннями та діагностика</p><div class="setting"><div><b>Telegram-сповіщення</b><p>Увімкни, щоб отримувати повідомлення про зникнення та відновлення електроенергії. Для першої підписки відкрий чат бота й натисни Start.</p></div><button class="switch" id="notify"><i></i></button></div><div class="card"><div class="sectionhead" style="margin:0 0 12px"><h2>Діагностика</h2><span>TOMZN / Tuya</span></div><p class="sub" id="diag">Очікуємо дані…</p></div></section>
 <div id="notice" class="notice hidden"></div>
@@ -138,7 +205,7 @@ nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:re
 'use strict';
 const tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
 if(tg){tg.ready();tg.expand();try{tg.setHeaderColor('#101720');tg.setBackgroundColor('#101720');}catch(e){}}
-const $=id=>document.getElementById(id),state={metric:'voltage',chartRange:'24h',outageRange:'7d',qualityRange:'24h',dtekDay:'today',dtekSchedule:null,dtekActual:null,dashboard:null,pending:{},seq:0,rpcQueue:Promise.resolve(),rpcCache:{},rpcInflight:{}};
+const $=id=>document.getElementById(id),state={metric:'voltage',chartRange:'24h',outageRange:'7d',qualityRange:'24h',dtekDay:'today',dtekSchedule:null,dtekActual:null,outageCalendar:null,selectedOutageDate:null,dashboard:null,pending:{},seq:0,rpcQueue:Promise.resolve(),rpcCache:{},rpcInflight:{}};
 const names={voltage:'Напруга',current:'Струм',power:'Потужність'},units={voltage:'В',current:'А',power:'кВт'};
 const conf=window.POWER_MONITOR_CONFIG||{},gasUrl=String(conf.GAS_EXEC_URL||'').trim(),frame=$('bridge');
 function showError(msg){$('notice').textContent=msg;$('notice').classList.remove('hidden');$('notice').classList.remove('ok');}
@@ -194,7 +261,7 @@ window.addEventListener('message',e=>{
  clearTimeout(p.timer);delete state.pending[String(m.requestId)];
  m.ok?p.resolve(m.result):p.reject(new Error(m.error||'Помилка серверного запиту.'));
 });
-const rpcCacheTtl={dashboard:8000,chart:30000,outages:30000,quality:45000,report:45000,dtek_schedule:300000,dtek_actual:45000};
+const rpcCacheTtl={dashboard:8000,chart:30000,outages:30000,outage_calendar:60000,quality:45000,report:45000,dtek_schedule:300000,dtek_actual:45000};
 function rpc(action,payload){
  const cacheable=Object.prototype.hasOwnProperty.call(rpcCacheTtl,action);
  const key=action+'|'+JSON.stringify(payload||{});
@@ -228,6 +295,7 @@ function goto(view){
  loadView(view).catch(e=>showError(e.message));
 }
 $('backHome').addEventListener('click',()=>goto('home'));
+$('outageCalendarGrid').addEventListener('click',e=>{const b=e.target.closest('[data-calendar-date]');if(!b)return;state.selectedOutageDate=b.dataset.calendarDate;renderOutageCalendar();});
 if(tg&&tg.BackButton){tg.BackButton.onClick(()=>goto('home'));}
 async function loadHome(){let d=await rpc('dashboard');state.dashboard=d;$('state').textContent=d.state==='on'?'● Світло є':d.state==='off'?'● Світла немає':'● Стан невідомий';$('state').style.color=d.state==='on'?'var(--green)':d.state==='off'?'var(--red)':'var(--amber)';$('stateSub').textContent=d.reason||'Стан за останньою перевіркою';$('fresh').textContent=d.snapshotFresh?'Дані актуальні':'Очікується оновлення даних';$('voltage').innerHTML=fmt(d.voltage,1)+'<i class="unit">В</i>';$('current').innerHTML=fmt(d.currentA,2)+'<i class="unit">А</i>';$('power').innerHTML=fmt(d.powerW===null?null:Number(d.powerW)/1000,2)+'<i class="unit">кВт</i>';$('homeOff').textContent=duration(d.outage24h&&d.outage24h.offMs);$('homeCount').textContent=d.outage24h?d.outage24h.outageCount:'—';$('notify').classList.toggle('on',!!d.notificationsEnabled);$('diag').textContent='Tuya: '+(d.tuyaCommState||'—')+' · Дані: '+(d.tuyaDataState||'—')+' · Останній успішний запит: '+(d.lastTuyaSuccessAt?date(d.lastTuyaSuccessAt):'—');}
 function pointTimeValue(p){
@@ -469,7 +537,83 @@ async function loadDtekSchedule(force){
 }
 
 async function loadCharts(){let d=await rpc('chart',{metric:state.metric,range:state.chartRange});$('chartName').textContent=names[state.metric]+' · '+state.chartRange;$('chartCount').textContent=d.count+' точок';drawChart(d);$('avg').textContent=fmt(d.average)+' '+units[state.metric];$('min').textContent=fmt(d.min)+' '+units[state.metric];$('max').textContent=fmt(d.max)+' '+units[state.metric];}
-async function loadOutages(){let d=await rpc('outages',{range:state.outageRange});$('offTotal').textContent=duration(d.offMs);$('offShare').textContent=fmt(d.sharePct)+'%';$('offCount').textContent=d.outageCount;$('offAvg').textContent=duration(d.averageDurationMs);let list=d.episodes||[];$('episodes').innerHTML=list.length?list.map(x=>'<div class="episode"><b>'+date(x.start)+(x.ongoing?' — триває':' — '+date(x.end))+'</b><strong>'+duration(x.durationMs)+'</strong><small>'+(x.startedBeforePeriod?'Почалося до початку періоду':'Відключення')+'</small></div>').join(''):'<div class="muted">Відключень за період не зафіксовано.</div>';}
+function currentKyivDateKey(){
+ return new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Kyiv',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+}
+function calendarDateLabel(dateKey,options){
+ const p=String(dateKey||'').split('-').map(Number);
+ if(p.length!==3||!p.every(Number.isFinite))return String(dateKey||'—');
+ return new Intl.DateTimeFormat('uk-UA',Object.assign({timeZone:'Europe/Kyiv'},options||{})).format(new Date(Date.UTC(p[0],p[1]-1,p[2],12,0,0)));
+}
+function renderOutageCalendarError(message){
+ $('outageCalendarMonth').textContent='Календар недоступний';
+ $('outageCalendarSource').textContent='Помилка завантаження';
+ const errorNode=document.createElement('div');errorNode.className='dtek-empty';errorNode.style.gridColumn='1/-1';errorNode.textContent=String(message||'Не вдалося отримати календар.');$('outageCalendarGrid').replaceChildren(errorNode);
+ $('calendarOn').textContent='—';$('calendarOff').textContent='—';$('calendarAvailability').textContent='—';$('calendarCoverage').textContent='—';
+ $('calendarSelected').innerHTML='<div class="muted">Немає даних для вибраного дня.</div>';
+}
+function renderOutageCalendar(){
+ const data=state.outageCalendar;
+ if(!data||!data.ok||!Array.isArray(data.days)){
+  renderOutageCalendarError(data&&data.error?data.error:'Календар поки недоступний.');
+  return;
+ }
+ const parts=String(data.month||'').split('-').map(Number);
+ if(parts.length!==2||!parts.every(Number.isFinite)){
+  renderOutageCalendarError('Сервер повернув некоректний місяць.');
+  return;
+ }
+ const year=parts[0],month=parts[1];
+ const monthDate=new Date(Date.UTC(year,month-1,15,12,0,0));
+ $('outageCalendarMonth').textContent=new Intl.DateTimeFormat('uk-UA',{month:'long',year:'numeric',timeZone:'Europe/Kyiv'}).format(monthDate);
+ $('outageCalendarSource').textContent='TOMZN · журнал переходів';
+ const byDate={};data.days.forEach(day=>{byDate[day.date]=day;});
+ const today=currentKyivDateKey();
+ if(!state.selectedOutageDate||!byDate[state.selectedOutageDate])state.selectedOutageDate=byDate[today]?today:(data.days[0]?data.days[0].date:null);
+ const firstWeekday=(new Date(Date.UTC(year,month-1,1,12,0,0)).getUTCDay()+6)%7;
+ const cells=[];
+ for(let i=0;i<firstWeekday;i++)cells.push('<span class="calendar-empty" aria-hidden="true"></span>');
+ const labels={on:'Світло було',off:'Без світла',mixed:'Були і періоди зі світлом, і відключення',partial:'Часткові дані',unknown:'Немає підтверджених даних',future:'Майбутній день'};
+ data.days.forEach(day=>{
+  const status=labels[day.status]?day.status:'unknown';
+  const selected=day.date===state.selectedOutageDate;
+  const title=labels[status]+' · покриття '+(day.coveragePct===null?'н/д':fmt(day.coveragePct)+'%')+' · без світла '+duration(day.offMs);
+  const badge=day.outageCount>0?'<small>'+Number(day.outageCount)+'×</small>':'<small>&nbsp;</small>';
+  cells.push('<button type="button" class="calendar-day status-'+status+(selected?' selected':'')+'" data-calendar-date="'+day.date+'" aria-pressed="'+(selected?'true':'false')+'" aria-label="'+calendarDateLabel(day.date,{day:'numeric',month:'long'})+'. '+title+'" title="'+title+'"><b>'+day.day+'</b>'+badge+'</button>');
+ });
+ const trailing=(7-(cells.length%7))%7;
+ for(let i=0;i<trailing;i++)cells.push('<span class="calendar-empty" aria-hidden="true"></span>');
+ $('outageCalendarGrid').innerHTML=cells.join('');
+ const summary=data.summary||{};
+ $('calendarOn').textContent=duration(Number(summary.onMs||0));
+ $('calendarOff').textContent=duration(Number(summary.offMs||0));
+ $('calendarAvailability').textContent=summary.availabilityPct===null||summary.availabilityPct===undefined?'—':fmt(summary.availabilityPct)+'%';
+ $('calendarCoverage').textContent=summary.coveragePct===null||summary.coveragePct===undefined?'—':fmt(summary.coveragePct)+'%';
+ renderSelectedOutageDay(byDate[state.selectedOutageDate]);
+}
+function renderSelectedOutageDay(day){
+ if(!day){$('calendarSelected').innerHTML='<div class="muted">Оберіть день у календарі.</div>';return;}
+ const statusNames={on:'Світло було весь відомий час',off:'Підтверджено відключення',mixed:'Були світло та відключення',partial:'Є невідомі проміжки',unknown:'Недостатньо даних',future:'Майбутній день'};
+ const status=statusNames[day.status]||statusNames.unknown;
+ const avail=day.availabilityPct===null||day.availabilityPct===undefined?'—':fmt(day.availabilityPct)+'%';
+ const coverage=day.coveragePct===null||day.coveragePct===undefined?'—':fmt(day.coveragePct)+'%';
+ $('calendarSelected').innerHTML='<div class="calendar-selected-head"><b>'+calendarDateLabel(day.date,{weekday:'long',day:'numeric',month:'long'})+'</b><span>'+status+'</span></div><div class="calendar-detail-grid"><div><span>Світло</span><b>'+duration(day.onMs)+'</b></div><div><span>Без світла</span><b>'+duration(day.offMs)+'</b></div><div><span>Невідомо</span><b>'+duration(day.unknownMs)+'</b></div></div><div class="calendar-note">Покриття даними: <b>'+coverage+'</b> · Доступність серед підтвердженого часу: <b>'+avail+'</b> · Нових відключень: <b>'+Number(day.outageCount||0)+'</b></div>';
+}
+async function loadOutages(){
+ const results=await Promise.all([
+  rpc('outages',{range:state.outageRange}),
+  rpc('outage_calendar',{}).catch(error=>({ok:false,error:error.message||String(error)}))
+ ]);
+ const d=results[0];
+ state.outageCalendar=results[1];
+ renderOutageCalendar();
+ $('offTotal').textContent=duration(d.offMs);
+ $('offShare').textContent=fmt(d.sharePct)+'%';
+ $('offCount').textContent=d.outageCount;
+ $('offAvg').textContent=duration(d.averageDurationMs);
+ const list=d.episodes||[];
+ $('episodes').innerHTML=list.length?list.map(x=>'<div class="episode"><b>'+date(x.start)+(x.ongoing?' — триває':' — '+date(x.end))+'</b><strong>'+duration(x.durationMs)+'</strong><small>'+(x.startedBeforePeriod?'Почалося до початку періоду':'Відключення')+'</small></div>').join(''):'<div class="muted">Відключень за період не зафіксовано.</div>';
+}
 async function loadQuality(){let d=await rpc('quality',{range:state.qualityRange});$('qAvg').textContent=fmt(d.averageVoltage)+' В';$('qMinMax').textContent=fmt(d.minVoltage)+' / '+fmt(d.maxVoltage)+' В';$('qNormal').textContent=duration(d.normalVoltageMs);$('qLow').textContent=duration(d.lowVoltageMs);$('qPct').textContent=fmt(d.lowVoltagePct)+'%';$('qCoverage').textContent=fmt(d.coveragePct)+'%';$('qEnergy').textContent=fmt(d.estimatedEnergyKwh,2)+' кВт·год';$('qSamples').textContent=d.validVoltageSamples;}
 async function startApp(){
  state.activeView='home';
