@@ -48,6 +48,15 @@ header{display:flex;justify-content:space-between;align-items:center;margin:4px 
 .dtek-links a{color:#80bfff;text-decoration:none}
 .dtek-refresh{background:#263b50;border:1px solid #3b5872;color:#d9e9f7;border-radius:10px;padding:7px 10px;font-size:13px}
 .dtek-empty{padding:22px 8px;text-align:center;color:var(--muted);font-size:12px}
+.dtek-actual{margin-top:17px;padding:13px 12px 12px;background:#14212e;border:1px solid #34475a;border-radius:15px}
+.dtek-actual-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.dtek-actual-head b{font-size:12px;letter-spacing:.25px}
+.dtek-actual-head span{font-size:10px;color:#9fb0c0;text-align:right}
+.dtek-actual-rail{height:23px;position:relative;background:#536273;border:1px solid #46596b;border-radius:99px;overflow:hidden}
+.dtek-actual-seg{position:absolute;top:0;bottom:0;min-width:1px}
+.dtek-actual-summary{font-size:10px;line-height:1.5;color:#b0bfcd;margin-top:10px}
+.dtek-actual-unknown{color:#899bad}
+.dtek-compare-label{font-size:9px;color:#8294a7;text-transform:uppercase;letter-spacing:1px;margin:14px 0 5px}
 .back-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 15px}
 .back-button{display:inline-flex;align-items:center;gap:9px;background:#202e3b;border:1px solid #34485a;color:#eaf3fb;border-radius:13px;padding:10px 14px;font-size:13px;font-weight:700}
 .back-button .arrow{font-size:19px;line-height:1;color:var(--blue)}
@@ -102,6 +111,7 @@ nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:re
   <button class="dtek-tab" type="button" data-day="tomorrow">Завтра</button>
  </div>
  <div id="dtekSchedule"><div class="dtek-empty">Отримуємо графік…</div></div>
+ <div id="dtekActual"></div>
  <div class="dtek-legend">
   <span><i class="dtek-dot" style="background:#27c56b"></i>Світло є</span>
   <span><i class="dtek-dot" style="background:#ed4d59"></i>Світла немає</span>
@@ -128,7 +138,7 @@ nav{position:fixed;bottom:0;left:0;right:0;display:grid;grid-template-columns:re
 'use strict';
 const tg=window.Telegram&&window.Telegram.WebApp?window.Telegram.WebApp:null;
 if(tg){tg.ready();tg.expand();try{tg.setHeaderColor('#101720');tg.setBackgroundColor('#101720');}catch(e){}}
-const $=id=>document.getElementById(id),state={metric:'voltage',chartRange:'24h',outageRange:'7d',qualityRange:'24h',dtekDay:'today',dtekSchedule:null,dashboard:null,pending:{},seq:0,rpcQueue:Promise.resolve(),rpcCache:{},rpcInflight:{}};
+const $=id=>document.getElementById(id),state={metric:'voltage',chartRange:'24h',outageRange:'7d',qualityRange:'24h',dtekDay:'today',dtekSchedule:null,dtekActual:null,dashboard:null,pending:{},seq:0,rpcQueue:Promise.resolve(),rpcCache:{},rpcInflight:{}};
 const names={voltage:'Напруга',current:'Струм',power:'Потужність'},units={voltage:'В',current:'А',power:'кВт'};
 const conf=window.POWER_MONITOR_CONFIG||{},gasUrl=String(conf.GAS_EXEC_URL||'').trim(),frame=$('bridge');
 function showError(msg){$('notice').textContent=msg;$('notice').classList.remove('hidden');$('notice').classList.remove('ok');}
@@ -184,7 +194,7 @@ window.addEventListener('message',e=>{
  clearTimeout(p.timer);delete state.pending[String(m.requestId)];
  m.ok?p.resolve(m.result):p.reject(new Error(m.error||'Помилка серверного запиту.'));
 });
-const rpcCacheTtl={dashboard:8000,chart:30000,outages:30000,quality:45000,report:45000,dtek_schedule:300000};
+const rpcCacheTtl={dashboard:8000,chart:30000,outages:30000,quality:45000,report:45000,dtek_schedule:300000,dtek_actual:45000};
 function rpc(action,payload){
  const cacheable=Object.prototype.hasOwnProperty.call(rpcCacheTtl,action);
  const key=action+'|'+JSON.stringify(payload||{});
@@ -374,17 +384,87 @@ function renderDtekSchedule(){
  const dayType=day.type==='fact'?'Фактичний графік':'Прогнозний графік';
  $('dtekSchedule').innerHTML='<div class="dtek-queue-line"><b>Черга 4.1</b><span>Без світла: '+offLabel+'</span></div><div class="dtek-intervals">'+intervalHtml+'</div><div class="dtek-bar-wrap">'+marker+'<div class="dtek-bar">'+bar+'</div></div><div class="dtek-timeline"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div><div style="font-size:10px;color:var(--muted);margin-top:10px">'+dayType+' · Часовий пояс: Київ</div>';
 }
+
+function renderDtekActual(){
+ const host=$('dtekActual');
+ const actual=state.dtekActual;
+ if(state.dtekDay!=='today'){
+  host.innerHTML='<div class="dtek-actual"><div class="dtek-actual-head"><b>ФАКТИЧНО · TOMZN</b><span>Ще немає фактичних даних за завтра</span></div><div class="dtek-actual-summary">Фактична смужка заповнюватиметься протягом доби за журналом перемикань електроживлення.</div></div>';
+  return;
+ }
+ if(!actual||!Number.isFinite(Number(actual.dayStart))||!Number.isFinite(Number(actual.dayEnd))){
+  host.innerHTML='<div class="dtek-actual"><div class="dtek-actual-head"><b>ФАКТИЧНО · TOMZN</b><span>Історія недоступна</span></div><div class="dtek-actual-summary">Не вдалося отримати журнал фактичних переходів стану.</div></div>';
+  return;
+ }
+ const start=Number(actual.dayStart),end=Number(actual.dayEnd);
+ const captured=Math.max(start,Math.min(end,Number(actual.capturedAt)||Date.now()));
+ const span=end-start;
+ if(span<=0){
+  host.innerHTML='<div class="dtek-actual"><div class="dtek-actual-head"><b>ФАКТИЧНО · TOMZN</b><span>Некоректний часовий діапазон</span></div></div>';
+  return;
+ }
+ const validState=s=>s==='on'||s==='off'?s:'unknown';
+ let current=validState(actual.stateAtStart);
+ let cursor=start;
+ let onMs=0,offMs=0,unknownMs=0;
+ const segments=[];
+ const transitions=(Array.isArray(actual.transitions)?actual.transitions:[])
+  .map(x=>({at:Number(x.at),state:validState(x.state)}))
+  .filter(x=>Number.isFinite(x.at)&&x.at>start&&x.at<=captured&&x.state!=='unknown')
+  .sort((a,b)=>a.at-b.at);
+ function addSegment(from,to,status){
+  if(to<=from)return;
+  const durationMs=to-from;
+  if(status==='on')onMs+=durationMs;
+  else if(status==='off')offMs+=durationMs;
+  else unknownMs+=durationMs;
+  segments.push({from,to,status});
+ }
+ transitions.forEach(ev=>{
+  if(ev.at<=cursor){current=ev.state;return;}
+  addSegment(cursor,ev.at,current);
+  cursor=ev.at;
+  current=ev.state;
+ });
+ addSegment(cursor,captured,current);
+ addSegment(captured,end,'unknown');
+ const colors={on:'#27c56b',off:'#ed4d59',unknown:'#536273'};
+ const names={on:'Світло було',off:'Світла не було',unknown:'Немає підтверджених даних'};
+ const segmentHtml=segments.map(seg=>{
+  const left=Math.max(0,Math.min(100,(seg.from-start)/span*100));
+  const width=Math.max(0,Math.min(100-left,(seg.to-seg.from)/span*100));
+  const tip=names[seg.status]+' · '+date(seg.from)+'–'+date(seg.to);
+  return '<div class="dtek-actual-seg" title="'+tip+'" style="left:'+left.toFixed(4)+'%;width:'+width.toFixed(4)+'%;background:'+colors[seg.status]+'"></div>';
+ }).join('');
+ const nowPct=Math.max(0,Math.min(100,(captured-start)/span*100));
+ const timeLabel=new Intl.DateTimeFormat('uk-UA',{timeZone:'Europe/Kyiv',hour:'2-digit',minute:'2-digit'}).format(new Date(captured));
+ const marker=captured<end?'<div class="dtek-now" data-time="'+timeLabel+'" style="left:calc('+nowPct.toFixed(4)+'% + 2px)"></div>':'';
+ const totalKnown=onMs+offMs;
+ let summary='Фактично зі світлом: '+duration(onMs)+' · Без світла: '+duration(offMs);
+ if(unknownMs>0)summary+=' · Невідомо: '+duration(unknownMs);
+ if(actual.coverage==='none')summary='Ще немає підтвердженого журналу стану за сьогодні. Сіра зона означає відсутність даних.';
+ else if(actual.coverage==='partial')summary+=' · Часткова історія: до першого зафіксованого переходу стан невідомий.';
+ if(actual.truncated)summary+=' · Історія скорочена до останніх переходів.';
+ host.innerHTML='<div class="dtek-actual"><div class="dtek-actual-head"><b>ФАКТИЧНО · TOMZN</b><span>Стан за журналом перемикань</span></div><div class="dtek-bar-wrap"><div class="dtek-actual-rail">'+segmentHtml+'</div>'+marker+'</div><div class="dtek-timeline"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div><div class="dtek-actual-summary">'+summary+'</div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;font-size:9px;color:#9fb0c0"><span><i class="dtek-dot" style="background:#27c56b"></i> Світло було</span><span><i class="dtek-dot" style="background:#ed4d59"></i> Світла не було</span><span><i class="dtek-dot" style="background:#536273"></i> Немає даних / майбутній час</span></div></div>';
+}
+
 async function loadDtekSchedule(force){
  try{
-  if(force){delete state.rpcCache['dtek_schedule|{}'];}
+  if(force){delete state.rpcCache['dtek_schedule|{}'];delete state.rpcCache['dtek_actual|{}'];}
   $('dtekSchedule').innerHTML='<div class="dtek-empty">Отримуємо графік ДТЕК…</div>';
-  const data=await rpc('dtek_schedule',{});
-  state.dtekSchedule=data;
+  const results=await Promise.all([
+   rpc('dtek_schedule',{}),
+   rpc('dtek_actual',{}).catch(()=>null)
+  ]);
+  state.dtekSchedule=results[0];
+  state.dtekActual=results[1];
   renderDtekSchedule();
+  renderDtekActual();
  }catch(e){
   $('dtekStatus').textContent='НЕДОСТУПНО';
   $('dtekStatus').style.color='var(--red)';
   const errorBox=document.createElement('div');errorBox.className='dtek-empty';errorBox.textContent=String(e&&e.message?e.message:'Не вдалося завантажити графік');$('dtekSchedule').replaceChildren(errorBox);
+  renderDtekActual();
  }
 }
 
@@ -403,7 +483,7 @@ document.querySelectorAll('#metrics [data-metric]').forEach(b=>b.addEventListene
 document.querySelectorAll('#chartRanges [data-range]').forEach(b=>b.addEventListener('click',()=>{state.chartRange=b.dataset.range;document.querySelectorAll('#chartRanges .chip').forEach(x=>x.classList.toggle('active',x===b));loadCharts().catch(e=>showError(e.message));}));
 document.querySelectorAll('#outageRanges [data-range]').forEach(b=>b.addEventListener('click',()=>{state.outageRange=b.dataset.range;document.querySelectorAll('#outageRanges .chip').forEach(x=>x.classList.toggle('active',x===b));loadOutages().catch(e=>showError(e.message));}));
 document.querySelectorAll('#qualityRanges [data-range]').forEach(b=>b.addEventListener('click',()=>{state.qualityRange=b.dataset.range;document.querySelectorAll('#qualityRanges .chip').forEach(x=>x.classList.toggle('active',x===b));loadQuality().catch(e=>showError(e.message));}));
-document.querySelectorAll('#dtekTabs [data-day]').forEach(b=>b.addEventListener('click',()=>{state.dtekDay=b.dataset.day;renderDtekSchedule();}));
+document.querySelectorAll('#dtekTabs [data-day]').forEach(b=>b.addEventListener('click',()=>{state.dtekDay=b.dataset.day;renderDtekSchedule();renderDtekActual();}));
 $('dtekRefresh').addEventListener('click',()=>loadDtekSchedule(true));
 $('refresh').addEventListener('click',async()=>{try{$('refresh').textContent='…';const refreshed=await rpc('refresh');state.rpcCache={};state.rpcCache['dashboard|{}']={at:Date.now(),value:refreshed};await loadView(state.activeView);showOk(refreshed.manualRefreshRequested?'Запит на перевірку прийнято. Показано останні доступні показники.':'Оновлення тимчасово обмежене, показано останні доступні показники.');}catch(e){showError(e.message);}finally{$('refresh').textContent='↻';}});
 $('notify').addEventListener('click',async()=>{try{let enabled=!$('notify').classList.contains('on'),r=await rpc('notifications',{enabled});state.rpcCache={};$('notify').classList.toggle('on',!!r.enabled);showOk(r.enabled?'Сповіщення увімкнено.':'Сповіщення вимкнено.');}catch(e){showError(e.message);}});
