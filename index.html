@@ -312,16 +312,38 @@ function dtekStatusText(status){
 function renderDtekSchedule(){
  const data=state.dtekSchedule;
  if(!data)return;
- const day=data[state.dtekDay]||{};
  const updated=data.lastUpdated?new Date(data.lastUpdated):null;
- const age=updated?Date.now()-updated.getTime():Infinity;
- $('dtekStatus').textContent=age<15*60000?'АКТУАЛЬНО':age<60*60000?'Є ЗАТРИМКА':'СТАРІ ДАНІ';
- $('dtekStatus').style.color=age<15*60000?'var(--green)':age<60*60000?'var(--amber)':'var(--red)';
- $('dtekUpdated').textContent='Перевірено: '+(updated?date(updated.getTime()):'—')+' · Графік на '+dtekDateLabel(day.date);
+ const age=updated?Math.max(0,Date.now()-updated.getTime()):Infinity;
+ const sourceUnavailable=data.sourceAvailable===false;
+ const stale=!!data.isStale||!!data.stale||age>60*60*1000;
+ if(!data.ok||data.unavailable||!data[state.dtekDay]){
+  $('dtekStatus').textContent='НЕДОСТУПНО';
+  $('dtekStatus').style.color='var(--red)';
+  $('dtekUpdated').textContent=data.staleReason||'Публічне джерело графіка тимчасово недоступне.';
+  const empty=document.createElement('div');empty.className='dtek-empty';empty.textContent='Поки немає перевіреного графіка для відображення.';
+  $('dtekSchedule').replaceChildren(empty);
+  return;
+ }
+ const day=data[state.dtekDay]||{};
+ if(sourceUnavailable){
+  $('dtekStatus').textContent='ОСТАННІ ДАНІ';
+  $('dtekStatus').style.color='var(--amber)';
+ }else if(stale){
+  $('dtekStatus').textContent='ЗАСТАРІЛІ ДАНІ';
+  $('dtekStatus').style.color='var(--red)';
+ }else if(age<15*60000){
+  $('dtekStatus').textContent='АКТУАЛЬНО';
+  $('dtekStatus').style.color='var(--green)';
+ }else{
+  $('dtekStatus').textContent='Є ЗАТРИМКА';
+  $('dtekStatus').style.color='var(--amber)';
+ }
+ $('dtekUpdated').textContent='Дані джерела: '+(updated?date(updated.getTime()):'—')+' · Графік на '+dtekDateLabel(day.date)+(data.staleReason?' · '+data.staleReason:'');
  document.querySelectorAll('#dtekTabs [data-day]').forEach(b=>b.classList.toggle('active',b.dataset.day===state.dtekDay));
  const slots=Array.isArray(day.slots)?day.slots:[];
  if(!slots.length||slots.every(s=>s.status==='unknown')){
-  $('dtekSchedule').innerHTML='<div class="dtek-empty">Графік для черги 4.1 поки не опублікований у джерелі.</div>';
+  const empty=document.createElement('div');empty.className='dtek-empty';empty.textContent='Графік для черги 4.1 поки не опублікований у джерелі.';
+  $('dtekSchedule').replaceChildren(empty);
   return;
  }
  let offMinutes=0;
@@ -334,7 +356,7 @@ function renderDtekSchedule(){
   if(minutes){
    const a=i+(status==='second'?0.5:0),b=i+(status==='first'?0.5:1);
    if(start===null){start=a;end=b;}
-   else if(Math.abs(start===null?0:end-a)<0.001){end=b;}
+   else if(Math.abs(end-a)<0.001){end=b;}
    else {intervals.push([start,end]);start=a;end=b;}
   }else if(start!==null){intervals.push([start,end]);start=null;end=null;}
  });
