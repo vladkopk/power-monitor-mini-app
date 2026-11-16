@@ -250,6 +250,7 @@ async function loadCharts(){let d=await rpc('chart',{metric:state.metric,range:s
 async function loadOutages(){let d=await rpc('outages',{range:state.outageRange});$('offTotal').textContent=duration(d.offMs);$('offShare').textContent=fmt(d.sharePct)+'%';$('offCount').textContent=d.outageCount;$('offAvg').textContent=duration(d.averageDurationMs);let list=d.episodes||[];$('episodes').innerHTML=list.length?list.map(x=>'<div class="episode"><b>'+date(x.start)+(x.ongoing?' — триває':' — '+date(x.end))+'</b><strong>'+duration(x.durationMs)+'</strong><small>'+(x.startedBeforePeriod?'Почалося до початку періоду':'Відключення')+'</small></div>').join(''):'<div class="muted">Відключень за період не зафіксовано.</div>';}
 async function loadQuality(){let d=await rpc('quality',{range:state.qualityRange});$('qAvg').textContent=fmt(d.averageVoltage)+' В';$('qMinMax').textContent=fmt(d.minVoltage)+' / '+fmt(d.maxVoltage)+' В';$('qNormal').textContent=duration(d.normalVoltageMs);$('qLow').textContent=duration(d.lowVoltageMs);$('qPct').textContent=fmt(d.lowVoltagePct)+'%';$('qCoverage').textContent=fmt(d.coveragePct)+'%';$('qEnergy').textContent=fmt(d.estimatedEnergyKwh,2)+' кВт·год';$('qSamples').textContent=d.validVoltageSamples;}
 async function startApp(){
+ state.activeView='home';
  $('appNav').classList.remove('hidden');
  $('refresh').classList.remove('hidden');
  await loadView('home');
