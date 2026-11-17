@@ -223,7 +223,8 @@ function rpcOnce(action,payload){
    crypto.getRandomValues(randomBytes);
    id=Array.from(randomBytes).map(b=>b.toString(16).padStart(2,'0')).join('');
   } catch (randomError) {
-   id=Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,18)+'_'+Math.random().toString(36).slice(2,18);
+   reject(new Error('Браузер не підтримує криптографічну генерацію requestId. Онови Telegram або відкрий Mini App у підтримуваному клієнті.'));
+   return;
   }
   let timer=setTimeout(()=>{delete state.pending[id];reject(new Error('Apps Script не повернув відповідь за 30 секунд. Перевір останню версію TG Hook і наявність обробника pmBridge у doPost().'));},30000);
   state.pending[id]={resolve,reject,timer};
@@ -235,31 +236,30 @@ function rpcOnce(action,payload){
   try{$('bridgeForm').submit();}catch(err){clearTimeout(timer);delete state.pending[id];reject(err);}
  });
 }
+const TRUSTED_BRIDGE_ORIGINS = new Set([
+ 'https://script.google.com',
+ 'https://script.googleusercontent.com'
+]);
 window.addEventListener('message',e=>{
- const m=e.data||{};
- if(m.type!=='power-monitor-rpc-result'||!m.requestId)return;
+ // Do not accept opaque origins, arbitrary googleusercontent subdomains,
+ // or messages merely because they contain a requestId.
+ if(!TRUSTED_BRIDGE_ORIGINS.has(e.origin))return;
+ const m=e.data;
+ if(!m||typeof m!=='object'||m.type!=='power-monitor-rpc-result')return;
+ if(typeof m.requestId!=='string'||! /^[a-f0-9]{48}$/.test(m.requestId))return;
 
- // Apps Script HTML Service can add nested sandbox frames. A reply may
- // originate from the direct iframe, an inner googleusercontent iframe,
- // or carry an opaque "null" origin. Accept only those bridge contexts,
- // then require the unpredictable one-time requestId before resolving.
- let trustedSource=e.source===frame.contentWindow;
- let trustedOrigin=e.origin==='null';
- if(!trustedOrigin&&!trustedSource){
-  try{
-   const u=new URL(e.origin);
-   trustedOrigin=u.protocol==='https:'&&(
-    u.hostname==='script.google.com'||
-    u.hostname==='script.googleusercontent.com'||
-    u.hostname.endsWith('.googleusercontent.com')
-   );
-  }catch(originError){}
+ const p=state.pending[m.requestId];
+ if(!p)return;
+
+ // Consume the one-time request before resolving the caller.
+ clearTimeout(p.timer);
+ delete state.pending[m.requestId];
+ if(m.ok===true){
+  p.resolve(m.result);
+ }else{
+  const errorText=typeof m.error==='string'?m.error.slice(0,300):'Помилка серверного запиту.';
+  p.reject(new Error(errorText));
  }
- if(!trustedSource&&!trustedOrigin)return;
-
- const p=state.pending[String(m.requestId)];if(!p)return;
- clearTimeout(p.timer);delete state.pending[String(m.requestId)];
- m.ok?p.resolve(m.result):p.reject(new Error(m.error||'Помилка серверного запиту.'));
 });
 const rpcCacheTtl={dashboard:8000,chart:30000,outages:30000,outage_calendar:60000,quality:45000,report:45000,dtek_schedule:300000,dtek_actual:45000};
 function rpc(action,payload){
@@ -416,7 +416,7 @@ function renderDtekSchedule(){
   $('dtekStatus').textContent='Є ЗАТРИМКА';
   $('dtekStatus').style.color='var(--amber)';
  }
- $('dtekUpdated').textContent='Дані джерела: '+(updated?date(updated.getTime()):'—')+' · Графік на '+dtekDateLabel(day.date)+(data.staleReason?' · '+data.staleReason:'');
+ $('dtekUpdated').textContent='Дані джерела: '+(updated?date(updated.getTime()):'—')+' · Графік на '+dtekDateLabel(day.date)+(data.staleReason?' · '+String(data.staleReason).slice(0,180):'');
  document.querySelectorAll('#dtekTabs [data-day]').forEach(b=>b.classList.toggle('active',b.dataset.day===state.dtekDay));
  const slots=Array.isArray(day.slots)?day.slots:[];
  if(!slots.length||slots.every(s=>s.status==='unknown')){
@@ -578,8 +578,11 @@ function renderOutageCalendar(){
   const status=labels[day.status]?day.status:'unknown';
   const selected=day.date===state.selectedOutageDate;
   const title=labels[status]+' · покриття '+(day.coveragePct===null?'н/д':fmt(day.coveragePct)+'%')+' · без світла '+duration(day.offMs);
-  const badge=day.outageCount>0?'<small>'+Number(day.outageCount)+'×</small>':'<small>&nbsp;</small>';
-  cells.push('<button type="button" class="calendar-day status-'+status+(selected?' selected':'')+'" data-calendar-date="'+day.date+'" aria-pressed="'+(selected?'true':'false')+'" aria-label="'+calendarDateLabel(day.date,{day:'numeric',month:'long'})+'. '+title+'" title="'+title+'"><b>'+day.day+'</b>'+badge+'</button>');
+  const dayNumber=Number(day.day);
+  if(!Number.isInteger(dayNumber)||dayNumber<1||dayNumber>31)return;
+  const safeDate=String(day.date);
+  const badge=Number(day.outageCount)>0?'<small>'+Math.max(0,Math.min(999,Math.trunc(Number(day.outageCount))))+'×</small>':'<small>&nbsp;</small>';
+  cells.push('<button type="button" class="calendar-day status-'+status+(selected?' selected':'')+'" data-calendar-date="'+safeDate+'" aria-pressed="'+(selected?'true':'false')+'" aria-label="'+calendarDateLabel(safeDate,{day:'numeric',month:'long'})+'. '+title+'" title="'+title+'"><b>'+dayNumber+'</b>'+badge+'</button>');
  });
  const trailing=(7-(cells.length%7))%7;
  for(let i=0;i<trailing;i++)cells.push('<span class="calendar-empty" aria-hidden="true"></span>');
