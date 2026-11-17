@@ -307,7 +307,7 @@ function pointTimeValue(p){
  return Number.isFinite(parsed)?parsed:null;
 }
 function drawChart(data){
- const pts=data.points||[];
+ const pts=Array.isArray(data.points)?data.points.filter(p=>p&&Number.isFinite(Number(p.value))):[];
  state.chartPoints=pts;
  if(!pts.length){
   $('chart').innerHTML='<div class="muted" style="padding:55px 0;text-align:center">Немає вимірювань за цей період</div>';
@@ -403,6 +403,13 @@ function renderDtekSchedule(){
   return;
  }
  const day=data[state.dtekDay]||{};
+ if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(String(day.date||''))){
+  $('dtekStatus').textContent='НЕКОРЕКТНІ ДАНІ';
+  $('dtekStatus').style.color='var(--red)';
+  const invalid=document.createElement('div');invalid.className='dtek-empty';invalid.textContent='Джерело повернуло некоректну дату графіка.';
+  $('dtekSchedule').replaceChildren(invalid);
+  return;
+ }
  if(sourceUnavailable){
   $('dtekStatus').textContent='ОСТАННІ ДАНІ';
   $('dtekStatus').style.color='var(--amber)';
@@ -567,7 +574,13 @@ function renderOutageCalendar(){
  const monthDate=new Date(Date.UTC(year,month-1,15,12,0,0));
  $('outageCalendarMonth').textContent=new Intl.DateTimeFormat('uk-UA',{month:'long',year:'numeric',timeZone:'Europe/Kyiv'}).format(monthDate);
  $('outageCalendarSource').textContent='TOMZN · журнал переходів';
- const byDate={};data.days.forEach(day=>{byDate[day.date]=day;});
+ const byDate={};
+ data.days.forEach(day=>{
+  if(!day||typeof day!=='object'||!/^\\d{4}-\\d{2}-\\d{2}$/.test(String(day.date||'')))return;
+  const dayNumber=Number(day.day);
+  if(!Number.isInteger(dayNumber)||dayNumber<1||dayNumber>31)return;
+  byDate[String(day.date)]=day;
+ });
  const today=currentKyivDateKey();
  if(!state.selectedOutageDate||!byDate[state.selectedOutageDate])state.selectedOutageDate=byDate[today]?today:(data.days[0]?data.days[0].date:null);
  const firstWeekday=(new Date(Date.UTC(year,month-1,1,12,0,0)).getUTCDay()+6)%7;
@@ -576,7 +589,7 @@ function renderOutageCalendar(){
  const labels={on:'Світло було',off:'Без світла',mixed:'Були і періоди зі світлом, і відключення',partial:'Часткові дані',unknown:'Немає підтверджених даних',future:'Майбутній день'};
  data.days.forEach(day=>{
   const status=labels[day.status]?day.status:'unknown';
-  const selected=day.date===state.selectedOutageDate;
+  const selected=String(day.date)===state.selectedOutageDate;
   const title=labels[status]+' · покриття '+(day.coveragePct===null?'н/д':fmt(day.coveragePct)+'%')+' · без світла '+duration(day.offMs);
   const dayNumber=Number(day.day);
   if(!Number.isInteger(dayNumber)||dayNumber<1||dayNumber>31)return;
