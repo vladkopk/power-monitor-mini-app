@@ -588,6 +588,7 @@ function renderOutageCalendar(){
  for(let i=0;i<firstWeekday;i++)cells.push('<span class="calendar-empty" aria-hidden="true"></span>');
  const labels={on:'Світло було',off:'Без світла',mixed:'Були і періоди зі світлом, і відключення',partial:'Часткові дані',unknown:'Немає підтверджених даних',future:'Майбутній день'};
  data.days.forEach(day=>{
+  if(!day||!byDate[String(day.date)])return;
   const status=labels[day.status]?day.status:'unknown';
   const selected=String(day.date)===state.selectedOutageDate;
   const title=labels[status]+' · покриття '+(day.coveragePct===null?'н/д':fmt(day.coveragePct)+'%')+' · без світла '+duration(day.offMs);
